@@ -2,10 +2,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express, { Request, Response } from "express";
+
 import bodyParser from "body-parser";
 import connectToDB from "./config/db";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import authRouter from "./routes/authRoutes";
+import usersRouter from "./routes/usersRoute";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 // Connect to db
@@ -27,7 +29,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("<h1>Hello world!</h1>");
 });
 
-app.use("/api/users", authRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 // Error and not found middleware
 app.use(notFound);
