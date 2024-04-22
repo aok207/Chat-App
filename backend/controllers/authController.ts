@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../database/userModel";
+import User from "../models/userModel";
 import hashPassword from "../utils/hashPassword";
 import bcrypt from "bcryptjs";
 import createToken from "../utils/createToken";
@@ -31,10 +31,7 @@ async function login(req: Request, res: Response) {
     // Log user in
     createToken(
       {
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        isOnline: user.isOnline,
+        id: user.id,
       },
       res,
       200
@@ -86,10 +83,7 @@ async function register(req: Request, res: Response) {
       if (user) {
         createToken(
           {
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-            isOnline: user.isOnline,
+            id: user.id,
           },
           res,
           201

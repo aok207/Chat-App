@@ -4,10 +4,7 @@ import jwt from "jsonwebtoken";
 
 function createToken(
   user: {
-    name: string;
-    email: string;
-    avatar: string | null | undefined;
-    isOnline: boolean | undefined;
+    id: mongoose.Types.ObjectId;
   },
   res: Response,
   status: number
@@ -23,7 +20,7 @@ function createToken(
       secure: process.env.NODE_ENV === "production",
     })
     .status(status)
-    .json({ message: `Welcome ${user.name}!`, data: { user } });
+    .json({ message: `Logged in successfully.` });
 }
 
 export default createToken;
