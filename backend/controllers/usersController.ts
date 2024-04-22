@@ -44,10 +44,15 @@ async function updateUserOnlineStatus(req: IRequest, res: Response) {
   res.status(200).json({ message: "Updated the status", data: user });
 }
 
-async function getOtherUsers(req: IRequest, res: Response) {
+async function searchUsers(req: IRequest, res: Response) {
+  const searchParam = req.query.name;
+
   const users = await User.find(
     {
-      name: { $ne: req.user?.name },
+      name: {
+        $regex: ".*" + searchParam + ".*",
+        $options: "i",
+      },
       email: { $ne: req.user?.email },
     },
     { _id: 0, password: 0, created_at: 0, updated_at: 0, __v: 0 }
@@ -60,5 +65,5 @@ export {
   getUserProfile,
   updateUserProfile,
   updateUserOnlineStatus,
-  getOtherUsers,
+  searchUsers,
 };
