@@ -22,6 +22,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
     formState: { errors },
   } = useForm<IFormInputs>();
 
+  // Submit handler
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
     console.log(data);
   };
