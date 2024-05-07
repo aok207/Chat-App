@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -34,12 +35,12 @@ const AuthForm = ({ type }: AuthFormProps) => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.message,
+        description: error.response.data.error || error.message,
       });
     },
   });
 
-  useQuery({
+  const profileQuery = useQuery({
     queryKey: ["users", "profile"],
     queryFn: getUserProfile,
     enabled: mutation.isSuccess,
@@ -51,8 +52,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
       });
       navigate("/");
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: err.response.data.error,
+      });
     },
   });
 
@@ -169,12 +175,14 @@ const AuthForm = ({ type }: AuthFormProps) => {
         </div>
         <div className="mt-1.5 w-full">
           <Button
-            className="mt-4 mx-0 w-full"
+            className="mt-4 mx-0 w-full flex items-center gap-2"
             type="submit"
-            disabled={mutation.isLoading}
+            disabled={mutation.isLoading || profileQuery.isLoading}
           >
             {mutation.isLoading && <Spinner />}
-            {!mutation.isLoading && (type === "login" ? "Log In" : "Sign Up")}
+            {profileQuery.isLoading && <Spinner />}
+
+            {type === "login" ? "Log In" : "Sign Up"}
           </Button>
         </div>
       </form>

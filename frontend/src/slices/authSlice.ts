@@ -7,10 +7,9 @@ export interface AuthState {
   user: null | UserType;
 }
 
-const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
-};
+const initialState: AuthState = JSON.parse(
+  localStorage.getItem("auth") || '{"isAuthenticated":false,"user":null}'
+);
 
 export const authSlice = createSlice({
   name: "auth",
@@ -19,11 +18,13 @@ export const authSlice = createSlice({
     login: (state, action: PayloadAction<UserType>) => {
       state.isAuthenticated = true;
       state.user = action.payload;
+      localStorage.setItem("auth", JSON.stringify(state));
     },
 
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
+      localStorage.removeItem("auth");
     },
   },
 });
