@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
+import { Toaster } from "@/components/ui/toaster";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
       </div>
+      <Toaster />
     </div>
   );
 };

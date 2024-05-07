@@ -1,17 +1,8 @@
 import axios from "axios";
 import { serverBaseUrl } from "@/lib/constants";
+import { IUserAuthInputs } from "@/types/types";
 
-interface ILoginData {
-  email: string;
-  password: string;
-}
-
-interface IRegisterData extends ILoginData {
-  username: string;
-  confirmPassword: string;
-}
-
-export const login = async (data: ILoginData) => {
+export const postLogin = async (data: IUserAuthInputs) => {
   return axios
     .post(serverBaseUrl + "/auth/login", data, {
       headers: {
@@ -21,7 +12,7 @@ export const login = async (data: ILoginData) => {
     .then((res) => res);
 };
 
-export const register = async (data: IRegisterData) => {
+export const postRegister = async (data: IUserAuthInputs) => {
   return axios
     .post(serverBaseUrl + "/auth/register", data, {
       headers: {
@@ -29,4 +20,10 @@ export const register = async (data: IRegisterData) => {
       },
     })
     .then((res) => res);
+};
+
+export const getUserProfile = async () => {
+  return axios
+    .get(serverBaseUrl + "/users/profile", { withCredentials: true })
+    .then((res) => res.data);
 };

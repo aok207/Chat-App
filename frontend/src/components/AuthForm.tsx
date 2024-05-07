@@ -2,29 +2,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
-
-interface IFormInputs {
-  name?: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-}
+import { useMutation, useQuery } from "react-query";
+import { getUserProfile, postLogin, postRegister } from "@/api/users";
+import { IUserAuthInputs } from "@/types/types";
+import Spinner from "./ui/spinner";
+import { useAppDispatch } from "@/hooks/hooks";
+import { login } from "@/slices/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 type AuthFormProps = {
   type: "login" | "register";
 };
 
 const AuthForm = ({ type }: AuthFormProps) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<IFormInputs>();
+  } = useForm<IUserAuthInputs>();
+
+  const mutation = useMutation({
+    mutationFn: type === "login" ? postLogin : postRegister,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    },
+  });
+
+  useQuery({
+    queryKey: ["users", "profile"],
+    queryFn: getUserProfile,
+    enabled: mutation.isSuccess,
+    onSuccess: (data) => {
+      dispatch(login(data));
+      toast({
+        description: `Welcome ${data?.name}`,
+        title: "Success",
+      });
+      navigate("/");
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   // Submit handler
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<IUserAuthInputs> = (data) => {
+    mutation.mutate(data);
   };
 
   return (
@@ -34,8 +68,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
           {type === "register" && (
             <div className="flex flex-col space-y-1.5">
               <Label
-                htmlFor="name"
-                className={`${errors?.name ? "text-red-600" : ""}`}
+                htmlFor="username"
+                className={`${errors?.username ? "text-red-600" : ""}`}
               >
                 Username
               </Label>
@@ -43,7 +77,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 id="name"
                 placeholder="Your username..."
                 type="text"
-                {...register("name", {
+                {...register("username", {
                   required: "Username field is required!",
                   maxLength: {
                     value: 25,
@@ -51,8 +85,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   },
                 })}
               />
-              {errors?.name && (
-                <p className="text-red-600 text-sm">{errors?.name?.message}</p>
+              {errors?.username && (
+                <p className="text-red-600 text-sm">
+                  {errors?.username?.message}
+                </p>
               )}
             </div>
           )}
@@ -132,8 +168,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
           )}
         </div>
         <div className="mt-1.5 w-full">
-          <Button className="mt-4 mx-0 w-full" type="submit">
-            {type === "login" ? "Log In" : "Sign Up"}
+          <Button
+            className="mt-4 mx-0 w-full"
+            type="submit"
+            disabled={mutation.isLoading}
+          >
+            {mutation.isLoading && <Spinner />}
+            {!mutation.isLoading && (type === "login" ? "Log In" : "Sign Up")}
           </Button>
         </div>
       </form>
