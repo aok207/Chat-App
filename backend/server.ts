@@ -21,7 +21,8 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin:
+      process.env.NODE_ENV === "development" ? "http://localhost:5173" : "*",
   })
 );
 app.use(cookieParser());
