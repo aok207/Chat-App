@@ -1,12 +1,11 @@
-import { Response } from "express";
-import { IRequest } from "../types/types";
+import { Request, Response } from "express";
 import User from "../models/userModel";
 
-function getUserProfile(req: IRequest, res: Response) {
+function getUserProfile(req: Request, res: Response) {
   res.status(200).json(req.user);
 }
 
-async function updateUserProfile(req: IRequest, res: Response) {
+async function updateUserProfile(req: Request, res: Response) {
   const { email, username, profilePicture } = req.body;
 
   const user = await User.findOneAndUpdate(
@@ -32,7 +31,7 @@ async function updateUserProfile(req: IRequest, res: Response) {
   });
 }
 
-async function updateUserOnlineStatus(req: IRequest, res: Response) {
+async function updateUserOnlineStatus(req: Request, res: Response) {
   const user = await User.findOneAndUpdate(
     { name: req.user?.name, email: req.user?.email },
     {
@@ -44,7 +43,7 @@ async function updateUserOnlineStatus(req: IRequest, res: Response) {
   res.status(200).json({ message: "Updated the status", data: user });
 }
 
-async function searchUsers(req: IRequest, res: Response) {
+async function searchUsers(req: Request, res: Response) {
   const searchParam = req.query.name;
 
   const users = await User.find(

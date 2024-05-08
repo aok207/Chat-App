@@ -9,8 +9,9 @@ import { IUserAuthInputs } from "@/types/types";
 import Spinner from "./ui/spinner";
 import { useAppDispatch } from "@/hooks/hooks";
 import { login } from "@/slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { serverBaseUrl } from "@/lib/constants";
 
 type AuthFormProps = {
   type: "login" | "register";
@@ -20,6 +21,15 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  if (searchParams.get("error")) {
+    toast({
+      variant: "destructive",
+      title: "Uh oh! Something went wrong.",
+      description: "Please try again.",
+    });
+  }
 
   const {
     register,
@@ -28,7 +38,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
     formState: { errors },
   } = useForm<IUserAuthInputs>();
 
-  const mutation = useMutation({
+  const loginMutation = useMutation({
     mutationFn: type === "login" ? postLogin : postRegister,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
@@ -43,7 +53,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const profileQuery = useQuery({
     queryKey: ["users", "profile"],
     queryFn: getUserProfile,
-    enabled: mutation.isSuccess,
+    enabled: searchParams.get("success") === "oAuth" || loginMutation.isSuccess,
     onSuccess: (data) => {
       dispatch(login(data));
       toast({
@@ -64,7 +74,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
 
   // Submit handler
   const onSubmit: SubmitHandler<IUserAuthInputs> = (data) => {
-    mutation.mutate(data);
+    loginMutation.mutate(data);
   };
 
   return (
@@ -177,9 +187,9 @@ const AuthForm = ({ type }: AuthFormProps) => {
           <Button
             className="mt-4 mx-0 w-full flex items-center gap-2"
             type="submit"
-            disabled={mutation.isLoading || profileQuery.isLoading}
+            disabled={loginMutation.isLoading || profileQuery.isLoading}
           >
-            {mutation.isLoading && <Spinner />}
+            {loginMutation.isLoading && <Spinner />}
             {profileQuery.isLoading && <Spinner />}
 
             {type === "login" ? "Log In" : "Sign Up"}
@@ -193,24 +203,26 @@ const AuthForm = ({ type }: AuthFormProps) => {
         </p>
       </div>
       <div className="w-full grid grid-cols-2 space-x-2">
-        <Button variant="outline">
-          <svg
-            className="mr-2 -ml-1 w-4 h-4"
-            aria-hidden="true"
-            focusable="false"
-            data-prefix="fab"
-            data-icon="google"
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 488 512"
-          >
-            <path
-              fill="currentColor"
-              d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-            ></path>
-          </svg>
-          Sign {type === "login" ? "in" : "up"} with Google
-        </Button>
+        <a href={`${serverBaseUrl + "/auth/google/redirect"}`}>
+          <Button variant="outline">
+            <svg
+              className="mr-2 -ml-1 w-4 h-4"
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fab"
+              data-icon="google"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 488 512"
+            >
+              <path
+                fill="currentColor"
+                d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+              ></path>
+            </svg>
+            Sign {type === "login" ? "in" : "up"} with Google
+          </Button>
+        </a>
         <Button variant="outline">
           <svg
             className="mr-2 -ml-1 w-4 h-4 shrink-0"

@@ -3,23 +3,26 @@ import { Schema, model, Document } from "mongoose";
 export interface IUser extends Document {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   avatar?: string;
   isOnline?: boolean;
+  provider?: string;
 }
 
 const userSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
-    required: true,
+    default: null,
   },
   avatar: {
     type: String,
@@ -28,6 +31,10 @@ const userSchema = new Schema({
   isOnline: {
     type: Boolean,
     default: false,
+  },
+  provider: {
+    type: String,
+    default: null,
   },
   created_at: {
     type: Date,
