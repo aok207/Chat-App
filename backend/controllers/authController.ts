@@ -61,6 +61,7 @@ async function login(req: Request, res: Response) {
   }
 }
 
+// success callback function for socail logins
 async function socialCallback(req: Request, res: Response) {
   const email = req.user?.email;
 
@@ -87,9 +88,9 @@ async function socialCallback(req: Request, res: Response) {
 }
 
 async function register(req: Request, res: Response) {
-  const { username, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
-  if (!username || !email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword) {
     return res
       .status(400)
       .json({ error: "Both email and password fields are required." });
@@ -101,7 +102,7 @@ async function register(req: Request, res: Response) {
 
   // find if user exists
   try {
-    const existingUser = await User.findOne({ $or: [{ username, email }] });
+    const existingUser = await User.findOne({ $or: [{ name, email }] });
 
     if (existingUser) {
       if (existingUser.email === email) {
@@ -110,7 +111,7 @@ async function register(req: Request, res: Response) {
           .json({ error: "User with the same email already exists!" });
       }
 
-      if (existingUser.name === username) {
+      if (existingUser.name === name) {
         return res.status(400).json({
           error: "Username already in use. Please choose a different username.",
         });
@@ -118,8 +119,8 @@ async function register(req: Request, res: Response) {
     } else {
       // make a new user
       const user = await User.create({
-        name: username,
-        email: email,
+        name,
+        email,
         password: await hashPassword(password),
       });
 

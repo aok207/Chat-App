@@ -85,7 +85,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             <div className="flex flex-col space-y-1.5">
               <Label
                 htmlFor="username"
-                className={`${errors?.username ? "text-red-600" : ""}`}
+                className={`${errors?.name ? "text-red-600" : ""}`}
               >
                 Username
               </Label>
@@ -93,7 +93,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 id="name"
                 placeholder="Your username..."
                 type="text"
-                {...register("username", {
+                {...register("name", {
                   required: "Username field is required!",
                   maxLength: {
                     value: 25,
@@ -101,10 +101,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   },
                 })}
               />
-              {errors?.username && (
-                <p className="text-red-600 text-sm">
-                  {errors?.username?.message}
-                </p>
+              {errors?.name && (
+                <p className="text-red-600 text-sm">{errors?.name?.message}</p>
               )}
             </div>
           )}

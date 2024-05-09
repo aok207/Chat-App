@@ -6,7 +6,7 @@ export type UserType = {
 };
 
 export interface IUserAuthInputs {
-  username?: string;
+  name?: string;
   email: string;
   password: string;
   confirmPassword?: string;

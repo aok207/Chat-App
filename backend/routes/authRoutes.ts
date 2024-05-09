@@ -27,6 +27,7 @@ router.get(
 
 router.get(
   "/google/callback",
+  guestOnly,
   passport.authenticate("google", {
     failureRedirect: process.env.CLIENT_URL + "/login?error=google" || "/",
     session: false,
