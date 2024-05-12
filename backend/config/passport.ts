@@ -4,21 +4,24 @@ import {
   Profile,
   VerifyCallback,
 } from "passport-google-oauth20";
+import {
+  Strategy as GithubStrategy,
+  Profile as GithubProfile,
+} from "passport-github2";
 import User from "../models/userModel";
 
-async function verify(
-  accessToken: string,
-  refreshToken: string,
-  profile: Profile,
+async function findOrCreateUser(
+  name: string | undefined,
+  email: string | undefined,
+  provider: string,
+  avatarPic: string | undefined,
   cb: VerifyCallback
 ) {
-  const { email, picture, name } = profile._json;
-
   try {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      if (profile.provider === existingUser.provider) {
+      if (provider === existingUser.provider) {
         return cb(null, {
           name: existingUser.name,
           email: existingUser.email,
@@ -35,8 +38,8 @@ async function verify(
       const user = await User.create({
         name,
         email,
-        avatar: picture,
-        provider: profile.provider,
+        avatar: avatarPic,
+        provider: provider,
       });
 
       if (user) {
@@ -52,8 +55,17 @@ async function verify(
     }
   } catch (error) {
     console.log(error);
-    return cb(error, false);
+    return cb(null, false);
   }
+}
+
+async function verify(
+  accessToken: string,
+  refreshToken: string,
+  profile: Profile,
+  cb: VerifyCallback
+) {
+  console.log(profile);
 }
 
 function setupPassport() {
@@ -64,7 +76,42 @@ function setupPassport() {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         callbackURL: "/api/auth/google/callback",
       },
-      verify
+      (
+        accessToken: string,
+        refreshToken: string,
+        profile: Profile,
+        cb: VerifyCallback
+      ) => {
+        const { email, picture, name } = profile._json;
+        findOrCreateUser(name, email, profile.provider, picture, cb);
+      }
+    )
+  );
+
+  passport.use(
+    new GithubStrategy(
+      {
+        clientID: process.env.GITHUB_CLIENT_ID as string,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+        callbackURL: "/api/auth/github/callback",
+        scope: ["user:email"],
+      },
+      (
+        accessToken: string,
+        refreshToken: string,
+        profile: GithubProfile,
+        cb: VerifyCallback
+      ) => {
+        const emails = profile.emails as { value: string; type: string }[];
+
+        findOrCreateUser(
+          profile.username,
+          emails[0]?.value,
+          profile.provider,
+          profile.profileUrl,
+          cb
+        );
+      }
     )
   );
 }

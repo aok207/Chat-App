@@ -4,7 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
-import { Toaster } from "@/components/ui/toaster";
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
@@ -37,8 +38,21 @@ const App = () => {
           />
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
+        <ToastContainer
+          stacked
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          transition={Bounce}
+        />
       </div>
-      <Toaster />
     </div>
   );
 };

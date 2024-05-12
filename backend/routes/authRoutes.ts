@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { Router } from "express";
 import {
   login,
@@ -30,6 +33,24 @@ router.get(
   guestOnly,
   passport.authenticate("google", {
     failureRedirect: process.env.CLIENT_URL + "/login?error=google" || "/",
+    session: false,
+  }),
+  socialCallback
+);
+
+// github
+router.get(
+  "/github/redirect",
+  guestOnly,
+  passport.authenticate("github", {
+    scope: ["user:email"],
+  })
+);
+
+router.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: process.env.CLIENT_URL + "/login?error=github" || "/",
     session: false,
   }),
   socialCallback
