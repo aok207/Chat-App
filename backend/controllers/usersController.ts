@@ -6,12 +6,12 @@ function getUserProfile(req: Request, res: Response) {
 }
 
 async function updateUserProfile(req: Request, res: Response) {
-  const { email, username, profilePicture } = req.body;
+  const { email, name, profilePicture } = req.body;
 
   const user = await User.findOneAndUpdate(
     { name: req.user?.name, email: req.user?.email },
     {
-      name: username || req.user?.name,
+      name: name || req.user?.name,
       email: email || req.user?.email,
       avatar: profilePicture || req.user?.avatar,
       updated_at: Date.now(),

@@ -41,10 +41,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const profileQuery = useQuery({
     queryKey: ["users", "profile"],
     queryFn: getUserProfile,
-    enabled: searchParams.get("success") === "oAuth" || loginMutation.isSuccess,
+    enabled: loginMutation.isSuccess,
     onSuccess: (data) => {
       dispatch(login(data));
-      showToast("success", `Welcome ${data?.name}`);
+      data?.name !== null && showToast("success", `Welcome ${data?.name}`);
       navigate("/");
     },
     onError: (err: any) => {
@@ -52,6 +52,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
       showToast("error", err.response.data.error);
     },
   });
+
+  if (searchParams.get("success") === "oAuth") {
+    profileQuery.refetch();
+  }
 
   useEffect(() => {
     if (searchParams.get("error")) {

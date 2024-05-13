@@ -26,6 +26,7 @@ const HomePage = () => {
   return (
     <div>
       <h1>Hello {user?.name}</h1>
+      <img src={`${user?.avatar}`} alt="user-avatar" />
       <button
         onClick={() => logoutMutation.mutate()}
         disabled={logoutMutation.isLoading}

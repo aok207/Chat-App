@@ -11,7 +11,7 @@ import {
 import User from "../models/userModel";
 
 async function findOrCreateUser(
-  name: string | undefined,
+  name: string | undefined | null,
   email: string | undefined,
   provider: string,
   avatarPic: string | undefined,
@@ -34,6 +34,13 @@ async function findOrCreateUser(
         );
       }
     } else {
+      // first check if username is taken
+      const nameExists = await User.findOne({ name });
+
+      if (nameExists) {
+        name = null;
+      }
+
       // make a new user
       const user = await User.create({
         name,
@@ -103,12 +110,12 @@ function setupPassport() {
         cb: VerifyCallback
       ) => {
         const emails = profile.emails as { value: string; type: string }[];
-
+        const pictures = profile.photos as any;
         findOrCreateUser(
           profile.username,
           emails[0]?.value,
           profile.provider,
-          profile.profileUrl,
+          pictures[0].value,
           cb
         );
       }

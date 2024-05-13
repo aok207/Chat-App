@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PickNamePage from "./pages/PickNamePage";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             }
             path="/signup"
           />
+          <Route element={<PickNamePage />} path="/pick-username" />
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
         <ToastContainer
