@@ -9,10 +9,13 @@ type ProtectedRoutesProps = {
 };
 
 const ProtectedRoutes = ({ children, type }: ProtectedRoutesProps) => {
-  console.log(type);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const username = useAppSelector((state) => state.auth.user?.name);
 
   if (type === "auth") {
+    if (username === null) {
+      return <Navigate to="/pick-username" />;
+    }
     return isAuthenticated ? children : <Navigate to="/login" />;
   } else {
     return isAuthenticated ? <Navigate to="/" /> : children;

@@ -10,6 +10,9 @@ import authRouter from "./routes/authRoutes";
 import usersRouter from "./routes/usersRoute";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import setupPassport from "./config/passport";
+
 // Connect to db
 connectToDB();
 
@@ -21,13 +24,18 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin:
+      process.env.NODE_ENV === "development" ? "http://localhost:5173" : "*",
   })
 );
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // port
 const port = process.env.PORT || 3000;
+
+// passport setup
+setupPassport();
 
 //
 app.get("/", (req: Request, res: Response) => {

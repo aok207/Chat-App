@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { IRequest, JwtPayload, userType } from "../types/types";
+import { JwtPayload, IUser } from "../types";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 
 export async function authOnly(
-  req: IRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -23,7 +23,7 @@ export async function authOnly(
     const user = (await User.findOne(
       { _id: decoded.id },
       { _id: 0, created_at: 0, updated_at: 0, password: 0, __v: 0 }
-    )) as userType | null;
+    )) as IUser | null;
 
     if (!user) {
       return res.status(401).json({ error: "Wrong token." });
@@ -37,11 +37,12 @@ export async function authOnly(
   next();
 }
 
-export function guestOnly(req: IRequest, res: Response, next: NextFunction) {
+export function guestOnly(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies["access_token"];
 
   if (token) {
     return res.status(403).json({ error: "You are already logged in!" });
   }
+
   next();
 }

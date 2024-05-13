@@ -3,11 +3,16 @@ export type UserType = {
   email: string;
   avatar: string | null;
   isOnline: boolean;
+  provider: "google" | "github" | null;
 };
 
 export interface IUserAuthInputs {
-  username?: string;
+  name?: string;
   email: string;
   password: string;
   confirmPassword?: string;
+}
+
+export interface IUsernameInput {
+  name: string;
 }

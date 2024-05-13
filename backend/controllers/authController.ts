@@ -24,18 +24,36 @@ async function login(req: Request, res: Response) {
   try {
     const user = await User.findOne({ email: email });
 
-    if (!user || (user && !(await bcrypt.compare(password, user.password)))) {
-      return res.status(401).json({ error: "Incorrect email or password!" });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ error: "A user doesn't exist with the given email." });
+    }
+
+    if (user.password) {
+      if (!user || (user && !(await bcrypt.compare(password, user.password)))) {
+        return res.status(401).json({ error: "Incorrect email or password!" });
+      }
+    } else {
+      // If there is no password the user is signed in with either google or github
+      return res
+        .status(401)
+        .json({ error: "This email is registered with a different provider." });
     }
 
     // Log user in
-    createToken(
-      {
-        id: user.id,
-      },
-      res,
-      200
-    );
+    const token = createToken({
+      id: user.id,
+    });
+
+    res
+      .cookie("access_token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      })
+      .status(200)
+      .json({ message: "Logged In successfully." });
   } catch (error) {
     return res
       .status(500)
@@ -43,10 +61,36 @@ async function login(req: Request, res: Response) {
   }
 }
 
-async function register(req: Request, res: Response) {
-  const { username, email, password, confirmPassword } = req.body;
+// success callback function for socail logins
+async function socialCallback(req: Request, res: Response) {
+  const email = req.user?.email;
 
-  if (!username || !email || !password || !confirmPassword) {
+  try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const token = createToken({ id: user._id });
+
+      res
+        .cookie("access_token", token, {
+          maxAge: 1000 * 60 * 60 * 24 * 30,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        })
+        .redirect(process.env.CLIENT_URL + "/login?success=oAuth" || "/");
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    console.log(error);
+    res.redirect(process.env.CLIENT_URL + "/login?error=oAuth" || "/");
+  }
+}
+
+async function register(req: Request, res: Response) {
+  const { name, email, password, confirmPassword } = req.body;
+
+  if (!name || !email || !password || !confirmPassword) {
     return res
       .status(400)
       .json({ error: "Both email and password fields are required." });
@@ -58,7 +102,7 @@ async function register(req: Request, res: Response) {
 
   // find if user exists
   try {
-    const existingUser = await User.findOne({ $or: [{ username, email }] });
+    const existingUser = await User.findOne({ $or: [{ name, email }] });
 
     if (existingUser) {
       if (existingUser.email === email) {
@@ -67,7 +111,7 @@ async function register(req: Request, res: Response) {
           .json({ error: "User with the same email already exists!" });
       }
 
-      if (existingUser.name === username) {
+      if (existingUser.name === name) {
         return res.status(400).json({
           error: "Username already in use. Please choose a different username.",
         });
@@ -75,19 +119,24 @@ async function register(req: Request, res: Response) {
     } else {
       // make a new user
       const user = await User.create({
-        name: username,
-        email: email,
+        name,
+        email,
         password: await hashPassword(password),
       });
 
       if (user) {
-        createToken(
-          {
-            id: user.id,
-          },
-          res,
-          201
-        );
+        const token = createToken({
+          id: user.id,
+        });
+
+        res
+          .cookie("access_token", token, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+          })
+          .status(201)
+          .json({ message: "Account created successfully!" });
       } else {
         throw new Error();
       }
@@ -107,4 +156,4 @@ function logout(req: Request, res: Response) {
     .json({ message: "Logged out successfully!" });
 }
 
-export { login, register, logout };
+export { login, socialCallback, register, logout };
