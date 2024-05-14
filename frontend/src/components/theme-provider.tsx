@@ -36,13 +36,11 @@ export function ThemeProvider({
     root.classList.remove("light", "dark");
 
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+      }
     }
 
     root.classList.add(theme);

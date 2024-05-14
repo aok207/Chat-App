@@ -26,5 +26,6 @@ export const updateUserInfo = (data: {
   email?: string | null;
   profilePicture?: string | null;
 }) => {
+  console.log(data);
   return api.put("/users/profile/update", data).then((res) => res.data);
 };

@@ -1,38 +1,42 @@
-import { postLogOut } from "@/api/users";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { searchUsersByName } from "@/api/users";
+import SideBar from "@/components/ui/SideBar";
+import { useAppSelector } from "@/hooks/hooks";
 import { showToast } from "@/lib/utils";
-import { logout } from "@/slices/authSlice";
-import { useMutation } from "react-query";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 const HomePage = () => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth?.user);
   const navigate = useNavigate();
 
-  const logoutMutation = useMutation({
-    mutationFn: postLogOut,
+  // search users query
+  const searchUsersQuery = useQuery({
+    queryFn: () => searchUsersByName(""),
+    queryKey: ["users", "profile", "search", { name }],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      showToast("error", error.response.data.error || error.message);
-    },
-    onSuccess: (data) => {
-      dispatch(logout());
-      navigate("/login");
-      showToast("success", data.message);
+    onError: (err: any) => {
+      console.log(err);
+      showToast("error", err.response.data.error || err.message);
     },
   });
 
   return (
     <div>
       <h1>Hello {user?.name}</h1>
-      <img src={`${user?.avatar}`} alt="user-avatar" />
-      <button
-        onClick={() => logoutMutation.mutate()}
-        disabled={logoutMutation.isLoading}
-      >
-        Log Out
-      </button>
+      {/* Sidebar */}
+      <Sheet>
+        <SheetTrigger>
+          <Menu />
+        </SheetTrigger>
+        <SideBar
+          user={user}
+          users={searchUsersQuery.isSuccess ? searchUsersQuery.data.data : []}
+          navigate={navigate}
+        />
+      </Sheet>
+      {/* Sidebar Ends */}
     </div>
   );
 };
