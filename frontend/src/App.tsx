@@ -7,6 +7,8 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PickNamePage from "./pages/PickNamePage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = () => {
   return (
@@ -37,7 +39,31 @@ const App = () => {
             }
             path="/signup"
           />
-          <Route element={<PickNamePage />} path="/pick-username" />
+          <Route
+            element={
+              <ProtectedRoutes type="guest">
+                <PickNamePage />
+              </ProtectedRoutes>
+            }
+            path="/pick-username"
+          />
+          <Route
+            element={
+              <ProtectedRoutes type="guest">
+                <ForgotPasswordPage />
+              </ProtectedRoutes>
+            }
+            path="/forgot-password"
+          />
+          <Route
+            element={
+              <ProtectedRoutes type="guest">
+                <ResetPasswordPage />
+              </ProtectedRoutes>
+            }
+            path="/reset-password/:token"
+          />
+
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
         <ToastContainer

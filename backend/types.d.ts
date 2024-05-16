@@ -15,5 +15,6 @@ declare module "express-serve-static-core" {
 }
 
 export type JwtPayload = {
-  id: mongoose.Types.ObjectId;
+  id?: mongoose.Types.ObjectId;
+  email?: string;
 };

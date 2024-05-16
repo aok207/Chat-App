@@ -2,21 +2,14 @@ import { Response } from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
-function createToken(user: { id: mongoose.Types.ObjectId }) {
-  const token = jwt.sign(user, process.env.JWT_ACCESS_SECRET || "", {
+function createToken(info: { id?: mongoose.ObjectId; email?: string }) {
+  const jwtSecret = process.env.JWT_ACCESS_SECRET as string;
+
+  const token = jwt.sign(info, jwtSecret, {
     expiresIn: "30 days",
   });
 
   return token;
-
-  // res
-  //   .cookie("access_token", token, {
-  //     maxAge: 1000 * 60 * 60 * 24 * 30,
-  //     httpOnly: true,
-  //     secure: process.env.NODE_ENV === "production",
-  //   })
-  //   .status(status)
-  //   .json({ message: `Logged in successfully.` });
 }
 
 export default createToken;

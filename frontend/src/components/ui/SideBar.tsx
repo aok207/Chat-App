@@ -11,10 +11,11 @@ import {
   LogOutIcon,
   SettingsIcon,
   Moon,
-  GroupIcon,
+  UsersRound,
 } from "lucide-react";
 import { Input } from "./input";
-import { postLogOut, updateUserInfo } from "@/api/users";
+import { updateUserInfo } from "@/api/users";
+import { postLogOut } from "@/api/auth";
 import { useMutation } from "react-query";
 import { useDispatch } from "react-redux";
 import { login, logout } from "@/slices/authSlice";
@@ -32,7 +33,7 @@ type SideBarProps = {
 
 const menus = [
   {
-    icon: <GroupIcon />,
+    icon: <UsersRound />,
     link: "/new-group",
     text: "New Group",
   },

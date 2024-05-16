@@ -8,6 +8,16 @@ function getUserProfile(req: Request, res: Response) {
 async function updateUserProfile(req: Request, res: Response) {
   const { email, name, profilePicture } = req.body;
 
+  const usernameExists = await User.findOne({ name });
+
+  console.log(usernameExists);
+
+  if (usernameExists) {
+    return res.status(400).json({
+      error: "Username is already taken!",
+    });
+  }
+
   const user = await User.findOneAndUpdate(
     { name: req.user?.name, email: req.user?.email },
     {

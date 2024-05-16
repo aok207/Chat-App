@@ -4,12 +4,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { getUserProfile, postLogin, postRegister } from "@/api/users";
+import { getUserProfile } from "@/api/users";
+import { postLogin, postRegister } from "@/api/auth";
 import { IUserAuthInputs } from "@/types/types";
 import Spinner from "./ui/spinner";
 import { useAppDispatch } from "@/hooks/hooks";
 import { login } from "@/slices/authSlice";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { serverBaseUrl } from "@/lib/constants";
 import { useEffect } from "react";
 import { showToast } from "@/lib/utils";
@@ -126,12 +127,21 @@ const AuthForm = ({ type }: AuthFormProps) => {
           </div>
 
           <div className="flex flex-col space-y-1.5">
-            <Label
-              htmlFor="password"
-              className={`${errors?.password ? "text-red-600" : ""}`}
-            >
-              Password
-            </Label>
+            <div className="flex w-full justify-between items-center">
+              <Label
+                htmlFor="password"
+                className={`${errors?.password ? "text-red-600" : ""}`}
+              >
+                Password
+              </Label>
+              {type === "login" && (
+                <Link to="/forgot-password">
+                  <span className="text-sm font-bold underline">
+                    Forgot password?
+                  </span>
+                </Link>
+              )}
+            </div>
             <Input
               id="password"
               placeholder="Your Password..."

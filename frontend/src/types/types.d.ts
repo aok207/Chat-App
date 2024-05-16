@@ -16,3 +16,8 @@ export interface IUserAuthInputs {
 export interface IUsernameInput {
   name: string;
 }
+
+export interface IResetPasswordInputs {
+  password: string;
+  confirmPassword: string;
+}

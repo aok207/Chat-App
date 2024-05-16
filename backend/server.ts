@@ -12,6 +12,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import setupPassport from "./config/passport";
+import path from "path";
 
 // Connect to db
 connectToDB();
@@ -24,8 +25,7 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin:
-      process.env.NODE_ENV === "development" ? "http://localhost:5173" : "*",
+    origin: process.env.CLIENT_URL,
   })
 );
 app.use(cookieParser());
@@ -42,8 +42,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("<h1>Hello world!</h1>");
 });
 
-app.use("/api/auth", authRouter);
-app.use("/api/users", usersRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", usersRouter);
 
 // Error and not found middleware
 app.use(notFound);
