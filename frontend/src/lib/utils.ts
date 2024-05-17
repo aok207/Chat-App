@@ -50,3 +50,12 @@ export const showToast: showToastFn = (type, message) => {
       });
   }
 };
+
+export const makeFallbackAvatar = (name: string): string => {
+  const splitted = name.split(" ");
+  if (splitted.length > 1) {
+    return `${splitted[0][0] + splitted[1][0]}`;
+  } else {
+    return name.slice(0, 2);
+  }
+};

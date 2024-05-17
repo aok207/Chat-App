@@ -2,12 +2,19 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useMutation } from "react-query";
 import { FormEvent, useRef, useState } from "react";
 import Spinner from "@/components/ui/spinner";
 import { showToast } from "@/lib/utils";
 import { postForgotPassword } from "@/api/auth";
+import { Link } from "react-router-dom";
 
 const ForgotPasswordPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,6 +83,14 @@ const ForgotPasswordPage = () => {
             </form>
           </CardContent>
         </CardHeader>
+        <CardFooter className="flex items-center justify-center">
+          <span>
+            Don't have an account?{" "}
+            <Link to="/signup">
+              <Button variant="link">Sign Up</Button>
+            </Link>
+          </span>
+        </CardFooter>
       </Card>
     </div>
   );

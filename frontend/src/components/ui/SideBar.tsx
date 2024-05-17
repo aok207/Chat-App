@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SheetContent, SheetHeader, SheetClose } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, showToast } from "@/lib/utils";
+import { cn, makeFallbackAvatar, showToast } from "@/lib/utils";
 import type { UserType } from "@/types/types";
 import { ChangeEvent, useState } from "react";
 import {
@@ -24,6 +24,7 @@ import { Button } from "./button";
 import { Link, NavigateFunction } from "react-router-dom";
 import { Switch } from "./switch";
 import { useTheme } from "../theme-provider";
+import { Separator } from "@/components/ui/separator";
 
 type SideBarProps = {
   user: UserType | null;
@@ -98,7 +99,9 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
           <div className="flex gap-3 items-center ml-3 group">
             <Avatar>
               <AvatarImage src={`${user?.avatar}`} alt={`profile-of-${name}`} />
-              <AvatarFallback>{user?.name.slice(0, 2)}</AvatarFallback>
+              <AvatarFallback>
+                {makeFallbackAvatar(user?.name as string)}
+              </AvatarFallback>
             </Avatar>
             {isNameInEditMode ? (
               <form onSubmit={handleChangeUsername}>
@@ -153,8 +156,8 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
               </>
             )}
           </div>
-          {menus.map((ele) => (
-            <Link to={ele.link} className="w-full">
+          {menus.map((ele, index) => (
+            <Link to={ele.link} className="w-full" key={index}>
               <Button
                 className={cn("w-full flex gap-2 justify-start")}
                 variant={"ghost"}
@@ -178,16 +181,19 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
             />
           </div>
         </div>
-        <SheetClose>
-          <Button
-            className={cn("flex gap-2 w-full")}
-            onClick={() => logoutMutation.mutate()}
-            disabled={logoutMutation.isLoading}
-            variant={"outline"}
-          >
-            <LogOutIcon className="w-5 h-5" /> Log Out
-          </Button>
-        </SheetClose>
+        <div className="flex flex-col space-y-8">
+          <Separator />
+          <SheetClose>
+            <Button
+              className={cn("flex gap-2 w-full")}
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isLoading}
+              variant={"outline"}
+            >
+              <LogOutIcon className="w-5 h-5" /> Log Out
+            </Button>
+          </SheetClose>
+        </div>
       </SheetHeader>
     </SheetContent>
   );
