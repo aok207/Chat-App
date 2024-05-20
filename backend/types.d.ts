@@ -6,6 +6,7 @@ export interface IUser {
   name: string;
   isOnline: boolean | undefined;
   avatar: string | null | undefined;
+  provider: "google" | "github" | null | undefined;
 }
 
 declare module "express-serve-static-core" {

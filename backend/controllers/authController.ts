@@ -97,7 +97,7 @@ async function register(req: Request, res: Response) {
   if (!name || !email || !password || !confirmPassword) {
     return res
       .status(400)
-      .json({ error: "Both email and password fields are required." });
+      .json({ error: "Please fill in every required field!" });
   }
 
   if (password !== confirmPassword) {
@@ -154,7 +154,11 @@ async function register(req: Request, res: Response) {
 }
 
 async function forgotPassword(req: Request, res: Response) {
-  const email = req.body.email;
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email field is required!" });
+  }
 
   const checkUserExists = await User.findOne({ email });
 
@@ -247,6 +251,14 @@ async function verifyResetToken(req: Request, res: Response) {
 
 async function resetPassword(req: Request, res: Response) {
   const token = req.params.token;
+  const { password, confirmPassword } = req.body;
+
+  if (!password || !confirmPassword) {
+    return res
+      .status(400)
+      .json({ error: "Please fill in every required fields!" });
+  }
+
   try {
     // get the email from the token
     const decoded = jwt.verify(
@@ -271,8 +283,6 @@ async function resetPassword(req: Request, res: Response) {
     }
 
     // If passed all of the above checks, we'll start the password reset process
-    const { password, confirmPassword } = req.body;
-
     if (password !== confirmPassword) {
       return res.status(400).json({ error: "Passwords do not match!" });
     }

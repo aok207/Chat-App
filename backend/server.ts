@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express, { Request, Response } from "express";
-
 import bodyParser from "body-parser";
 import connectToDB from "./config/db";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
@@ -12,7 +11,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import setupPassport from "./config/passport";
-import path from "path";
 
 // Connect to db
 connectToDB();
