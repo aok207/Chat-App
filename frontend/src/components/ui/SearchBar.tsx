@@ -43,7 +43,7 @@ const SearchBar = () => {
                 damping: 20,
               }}
               exit={{ rotate: 0, scale: 0 }}
-              className="absolute inset-full left-[95%] top-[75%]"
+              className="absolute inset-full left-[97%] top-[75%]"
               onClick={() => {
                 setIsSearchFocused(false);
                 dispatch(setSearchQuery(""));

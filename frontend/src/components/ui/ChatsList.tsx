@@ -20,9 +20,6 @@ const ChatsList = () => {
       console.log(err);
       showToast("error", err.response.data.error || err.message);
     },
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
 
   return (

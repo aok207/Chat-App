@@ -10,22 +10,7 @@ import {
 import AuthForm from "@/components/AuthForm";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const authVariant = {
-  hidden: {
-    opacity: 0,
-    x: 300,
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {},
-  },
-  exit: {
-    opacity: 0,
-    x: 300,
-  },
-};
+import { pageVariant } from "@/framerMotion/variants";
 
 const SignUpPage = () => {
   return (
@@ -41,7 +26,7 @@ const SignUpPage = () => {
           initial="hidden"
           animate="visible"
           exit="exit"
-          variants={authVariant}
+          variants={pageVariant}
         >
           <CardHeader className="flex flex-col items-center">
             <img src="/logo.png" alt="" className="h-10" />

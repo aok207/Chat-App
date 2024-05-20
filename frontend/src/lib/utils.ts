@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type showToastFn = (type: string, message: string) => void;
+type showToastFn = (
+  type: "error" | "success" | "info",
+  message: string
+) => void;
 
 export const showToast: showToastFn = (type, message) => {
   switch (type) {

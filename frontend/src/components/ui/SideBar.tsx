@@ -3,7 +3,7 @@ import { SheetContent, SheetHeader, SheetClose } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, makeFallbackAvatar, showToast } from "@/lib/utils";
 import type { UserType } from "@/types/types";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import {
   Edit,
   X,
@@ -64,7 +64,9 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
     },
   });
 
-  const handleChangeUsername = () => {
+  const handleChangeUsername = (e: FormEvent) => {
+    e.preventDefault();
+
     if (name === "") {
       showToast("error", "Username cannot be empty!");
       return;
@@ -183,15 +185,12 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
         </div>
         <div className="flex flex-col space-y-8">
           <Separator />
-          <SheetClose>
-            <Button
-              className={cn("flex gap-2 w-full")}
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isLoading}
-              variant={"outline"}
-            >
-              <LogOutIcon className="w-5 h-5" /> Log Out
-            </Button>
+          <SheetClose
+            className="items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 flex gap-2 w-full"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isLoading}
+          >
+            <LogOutIcon className="w-5 h-5" /> Log Out
           </SheetClose>
         </div>
       </SheetHeader>

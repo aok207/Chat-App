@@ -43,11 +43,11 @@ const Search = ({
   return (
     <div className="h-full">
       {searchQuery === "" && currentPage === "search" && (
-        <div className="overflow-hidden flex flex-col justify-center h-full items-center">
+        <div className="overflow-hidden text-center flex flex-col justify-center h-full items-center">
           <motion.img
             src="/magnifying_glass.png"
             alt="magnifying_glass"
-            className="w-1/2"
+            className="w-40"
             initial={{ x: 100, y: -100, rotate: 80 }}
             animate={{ x: 0, y: 0, rotate: 0 }}
             exit={{ x: 300, y: -300, rotate: 80 }}

@@ -11,6 +11,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Layout from "./components/ui/Layout";
 import { AnimatePresence } from "framer-motion";
+import SettingsPage from "./pages/SettingsPage";
 
 const App = () => {
   const location = useLocation();
@@ -29,6 +30,16 @@ const App = () => {
                 </ProtectedRoutes>
               }
               path="/"
+            />
+            <Route
+              element={
+                <ProtectedRoutes type="auth">
+                  <Layout>
+                    <SettingsPage />
+                  </Layout>
+                </ProtectedRoutes>
+              }
+              path="/settings"
             />
             <Route
               element={
