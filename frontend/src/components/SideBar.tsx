@@ -2,7 +2,6 @@
 import { SheetContent, SheetHeader, SheetClose } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, makeFallbackAvatar, showToast } from "@/lib/utils";
-import type { UserType } from "@/types/types";
 import { ChangeEvent, FormEvent, useState } from "react";
 import {
   Edit,
@@ -13,18 +12,19 @@ import {
   Moon,
   UsersRound,
 } from "lucide-react";
-import { Input } from "./input";
+import { Input } from "./ui/input";
 import { updateUserInfo } from "@/api/users";
 import { postLogOut } from "@/api/auth";
 import { useMutation } from "react-query";
 import { useDispatch } from "react-redux";
 import { login, logout } from "@/slices/authSlice";
-import Spinner from "./spinner";
-import { Button } from "./button";
+import Spinner from "./ui/spinner";
+import { Button } from "./ui/button";
 import { Link, NavigateFunction } from "react-router-dom";
-import { Switch } from "./switch";
-import { useTheme } from "../theme-provider";
+import { Switch } from "./ui/switch";
+import { useTheme } from "./theme-provider";
 import { Separator } from "@/components/ui/separator";
+import { UserType } from "@/types/types";
 
 type SideBarProps = {
   user: UserType | null;

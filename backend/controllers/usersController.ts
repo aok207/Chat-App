@@ -64,7 +64,7 @@ async function updateUserProfile(req: Request, res: Response) {
     {
       _id: user?._id,
     },
-    { _id: 0, created_at: 0, password: 0, __v: 0 }
+    { created_at: 0, updated_at: 0, password: 0, __v: 0 }
   );
 
   res.status(200).json({
@@ -117,7 +117,7 @@ async function updateUserOnlineStatus(req: Request, res: Response) {
     {
       isOnline: req.body.onlineStatus === "active" ? true : false,
     },
-    { _id: 0, created_at: 0, updated_at: 0, password: 0 }
+    { created_at: 0, updated_at: 0, password: 0, __v: 0 }
   );
 
   res.status(200).json({ message: "Updated the status", data: user });
@@ -151,7 +151,7 @@ async function searchUsers(req: Request, res: Response) {
       },
       email: { $ne: req.user?.email },
     },
-    { _id: 0, password: 0, created_at: 0, updated_at: 0, __v: 0 }
+    { password: 0, created_at: 0, updated_at: 0, __v: 0 }
   );
 
   res.status(200).json({ data: users });

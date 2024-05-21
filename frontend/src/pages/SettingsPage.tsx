@@ -114,7 +114,7 @@ const SettingsPage = () => {
             <section className="flex items-center justify-between w-full">
               <Link
                 to={"/"}
-                className="flex items-center gap-0.5 hover:text-purple-400 text-gray-800 dark:text-slate-50  transition-colors"
+                className="hover:text-purple-400 text-gray-800 dark:text-slate-50  transition-colors"
               >
                 <ArrowLeft />
               </Link>

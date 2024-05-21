@@ -1,4 +1,4 @@
-import { Input } from "./input";
+import { Input } from "./ui/input";
 import { ChangeEvent, useState } from "react";
 import { SearchIcon, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";

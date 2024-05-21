@@ -22,7 +22,7 @@ export async function authOnly(
 
     const user = (await User.findOne(
       { _id: decoded.id },
-      { _id: 0, created_at: 0, updated_at: 0, password: 0, __v: 0 }
+      { created_at: 0, updated_at: 0, password: 0, __v: 0 }
     )) as IUser | null;
 
     if (!user) {

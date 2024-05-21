@@ -9,9 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 import PickNamePage from "./pages/PickNamePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import Layout from "./components/ui/Layout";
+import Layout from "./components/Layout";
 import { AnimatePresence } from "framer-motion";
 import SettingsPage from "./pages/SettingsPage";
+import IndividualChatPage from "./pages/IndividualChatPage";
 
 const App = () => {
   const location = useLocation();
@@ -21,26 +22,11 @@ const App = () => {
       <div className="w-full h-full overflow-auto">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route
-              element={
-                <ProtectedRoutes type="auth">
-                  <Layout>
-                    <HomePage />
-                  </Layout>
-                </ProtectedRoutes>
-              }
-              path="/"
-            />
-            <Route
-              element={
-                <ProtectedRoutes type="auth">
-                  <Layout>
-                    <SettingsPage />
-                  </Layout>
-                </ProtectedRoutes>
-              }
-              path="/settings"
-            />
+            <Route path="/" element={<Layout />}>
+              <Route element={<HomePage />} index />
+              <Route element={<SettingsPage />} path="/settings" />
+              <Route element={<IndividualChatPage />} path="/chats/:id" />
+            </Route>
             <Route
               element={
                 <ProtectedRoutes type="guest">

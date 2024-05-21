@@ -3,7 +3,7 @@ import { UserType } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import User from "./User";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "./ui/skeleton";
 
 const containerVariant = {
   hidden: { opacity: 0 },

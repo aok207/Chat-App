@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Express } from "express-serve-static-core";
 
 export interface IUser {
+  _id: mongoose.Types.ObjectId;
   email: string;
   name: string;
   isOnline: boolean | undefined;

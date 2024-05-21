@@ -1,5 +1,5 @@
 import { UserType } from "@/types/types";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { makeFallbackAvatar } from "@/lib/utils";
 
 const User = ({

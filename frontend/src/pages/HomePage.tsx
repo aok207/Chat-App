@@ -1,9 +1,8 @@
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch } from "@/hooks/hooks";
 import { setCurrentPage } from "@/slices/uiSlice";
 import { useEffect } from "react";
 
 const HomePage = () => {
-  const user = useAppSelector((state) => state.auth?.user);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -11,8 +10,10 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Hello {user?.name}</h1>
+    <div className="w-full h-full grid place-items-center">
+      <p className="rounded-full px-3 text-white bg-black/30 dark:text-white dark:bg-slate-900 p-2">
+        Select a chat to start messaging
+      </p>
     </div>
   );
 };

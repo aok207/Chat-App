@@ -6,27 +6,25 @@ import {
 } from "@/components/ui/resizable";
 import ChatsList from "./ChatsList";
 import { useAppSelector } from "@/hooks/hooks";
+import { Outlet } from "react-router-dom";
+import ProtectedRoutes from "./ProtectedRoutes";
 
-type LayoutProps = {
-  children: React.ReactNode;
-};
-
-const Layout = ({ children }: LayoutProps) => {
+const Layout = () => {
   const currentPage = useAppSelector((state) => state.ui.currentPage);
   return (
-    <>
+    <ProtectedRoutes type="auth">
       <div className="w-full h-full hidden md:block">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             defaultSize={20}
             minSize={20}
-            className="p-1 overflow-hidden h-screen"
+            className="overflow-hidden h-screen"
           >
             <ChatsList />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel className="p-1 w-full h-full overflow-hidden">
-            {children}
+          <ResizablePanel className="w-full h-full bg-gray-100 dark:bg-gray-900 overflow-hidden bg">
+            <Outlet />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
@@ -35,10 +33,10 @@ const Layout = ({ children }: LayoutProps) => {
         {currentPage === "chats-list" || currentPage === "search" ? (
           <ChatsList />
         ) : (
-          children
+          <Outlet />
         )}
       </div>
-    </>
+    </ProtectedRoutes>
   );
 };
 

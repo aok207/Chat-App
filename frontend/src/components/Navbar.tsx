@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import SideBar from "@/components/ui/SideBar";
+import SideBar from "@/components/SideBar";
 import { UseQueryResult } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
