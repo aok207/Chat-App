@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Express } from "express-serve-static-core";
+import { Socket } from "socket.io";
 
 export interface IUser {
   _id: mongoose.Types.ObjectId;
@@ -20,3 +21,7 @@ export type JwtPayload = {
   id?: mongoose.Types.ObjectId;
   email?: string;
 };
+
+interface AuthenticatedSocket extends Socket {
+  user?: IUser;
+}

@@ -6,11 +6,10 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "normalServer": "tsx watch backend/server.ts",
-    "chatServer": "tsx watch backend/chatServer.ts",
-    "server": "concurrently \"npm run normalServer\" \"npm run chatServer\"",
+    "sockets": "tsx watch backend/sockets/index.ts",
+    "server": "tsx watch backend/server.ts",
     "client": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run normalServer\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",

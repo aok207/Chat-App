@@ -10,11 +10,28 @@ import {
 import AuthForm from "@/components/AuthForm";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { pageVariant } from "@/framerMotion/variants";
+import { showToast } from "@/lib/utils";
+import { socket } from "@/sockets/sockets";
 
 const LoginPage = () => {
   const [target, setTargetPage] = useState("");
+
+  useEffect(() => {
+    const handleConnect = () => {
+      showToast("success", "Connected to socket server!");
+    };
+
+    // connect to sockets.io
+    socket.connect();
+    socket.on("connect", handleConnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, []);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full">
       <motion.img
