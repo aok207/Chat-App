@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,9 +8,32 @@ import ChatsList from "./ChatsList";
 import { useAppSelector } from "@/hooks/hooks";
 import { Outlet } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
+import { socket } from "@/sockets/sockets";
+import { showToast } from "@/lib/utils";
 
 const Layout = () => {
   const currentPage = useAppSelector((state) => state.ui.currentPage);
+
+  useEffect(() => {
+    // connect to sockets.io
+    socket.connect();
+  }, []);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      showToast("success", "Connected to socket server!");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log(err);
+      showToast("error", err.message);
+    });
+
+    return () => {
+      socket.off("connect_error");
+    };
+  }, []);
+
   return (
     <ProtectedRoutes type="auth">
       <div className="w-full h-full hidden md:block">

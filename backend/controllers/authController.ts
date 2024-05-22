@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
-import hashPassword from "../utils/hashPassword";
+import { hashPassword, createToken } from "../utils/utils";
 import bcrypt from "bcryptjs";
-import createToken from "../utils/createToken";
 import jwt from "jsonwebtoken";
 import mailTransporter, { getMailHtml } from "../config/nodemailer";
 import ResetToken from "../models/resetTokenModel";

@@ -8,8 +8,6 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowLeft, PanelRight } from "lucide-react";
 import MessageInput from "@/components/MessageInput";
 import Message from "@/components/Message";
-import { socket } from "@/sockets/sockets";
-import { showToast } from "@/lib/utils";
 
 const sampleData = [
   {
@@ -102,18 +100,6 @@ const IndividualChatPage = () => {
   useEffect(() => {
     dispatch(setCurrentPage("single-chat"));
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-
-    const handleConnect = () => {
-      showToast("success", "Connected to socket server!");
-    };
-
-    // connect to sockets.io
-    socket.connect();
-    socket.on("connect", handleConnect);
-
-    return () => {
-      socket.off("connect", handleConnect);
-    };
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcrypt from "bcryptjs";
-import hashPassword from "../utils/hashPassword";
+import { hashPassword } from "../utils/utils";
 
 function getUserProfile(req: Request, res: Response) {
   res.status(200).json(req.user);
@@ -111,18 +111,6 @@ async function updatePassword(req: Request, res: Response) {
   }
 }
 
-async function updateUserOnlineStatus(req: Request, res: Response) {
-  const user = await User.findOneAndUpdate(
-    { name: req.user?.name, email: req.user?.email },
-    {
-      isOnline: req.body.onlineStatus === "active" ? true : false,
-    },
-    { created_at: 0, updated_at: 0, password: 0, __v: 0 }
-  );
-
-  res.status(200).json({ message: "Updated the status", data: user });
-}
-
 async function deleteUser(req: Request, res: Response) {
   try {
     const user = await User.findOne({
@@ -161,7 +149,6 @@ export {
   getUserProfile,
   updateUserProfile,
   updatePassword,
-  updateUserOnlineStatus,
   deleteUser,
   searchUsers,
 };

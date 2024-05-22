@@ -99,12 +99,18 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
       <SheetHeader className={cn("flex flex-col justify-between h-full")}>
         <div className="flex flex-col items-start justify-center gap-4 w-full">
           <div className="flex gap-3 items-center ml-3 group">
-            <Avatar>
-              <AvatarImage src={`${user?.avatar}`} alt={`profile-of-${name}`} />
-              <AvatarFallback>
-                {makeFallbackAvatar(user?.name as string)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar>
+                <AvatarImage
+                  src={`${user?.avatar}`}
+                  alt={`profile-of-${name}`}
+                />
+                <AvatarFallback>
+                  {makeFallbackAvatar(user?.name as string)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="w-3 h-3 bg-green-600 absolute right-0 bottom-0 rounded-full" />
+            </div>
             {isNameInEditMode ? (
               <form onSubmit={handleChangeUsername}>
                 <div className="flex gap-2">

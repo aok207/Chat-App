@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload, IUser } from "../types";
-import jwt from "jsonwebtoken";
-import User from "../models/userModel";
+import { verifyAccessToken } from "../utils/utils";
 
 export async function authOnly(
   req: Request,
@@ -14,24 +12,12 @@ export async function authOnly(
     return res.status(401).json({ error: "You are not logged in!" });
   }
 
-  try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET || ""
-    ) as JwtPayload;
+  const verify = await verifyAccessToken(token);
 
-    const user = (await User.findOne(
-      { _id: decoded.id },
-      { created_at: 0, updated_at: 0, password: 0, __v: 0 }
-    )) as IUser | null;
-
-    if (!user) {
-      return res.status(401).json({ error: "Wrong token." });
-    }
-
-    req.user = user;
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token." });
+  if (verify.ok) {
+    req.user = verify.data;
+  } else {
+    return res.status(401).json({ error: verify.message });
   }
 
   next();

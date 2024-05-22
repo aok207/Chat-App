@@ -6,11 +6,10 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import cookie from "cookie";
-import { AuthenticatedSocket, IUser, JwtPayload } from "../types";
 import { type Request, type Response } from "express";
-import jwt from "jsonwebtoken";
-import User from "../models/userModel";
 import connectToDB from "../config/db";
+import { updateUserOnlineStatus, verifyAccessToken } from "../utils/utils";
+import { AuthenticatedSocket } from "../types";
 
 const app = express();
 
@@ -34,51 +33,37 @@ const io = new Server(server, {
   cookie: true,
 });
 
-io.engine.use(async (req: any, res: Response, next: Function) => {
-  const isHandshake = req._query.sid === undefined;
-
-  if (isHandshake) {
-    if (!req.headers.cookie) {
-      return next(new Error("No token"));
-    }
-
-    const parsedCookie = cookie.parse(req.headers.cookie);
-
-    if (!parsedCookie["access_token"]) {
-      return next(new Error("No token"));
-    }
-
-    try {
-      const decoded = jwt.verify(
-        parsedCookie["access_token"],
-        process.env.JWT_ACCESS_SECRET || ""
-      ) as JwtPayload;
-
-      const user = (await User.findOne(
-        { _id: decoded.id },
-        { created_at: 0, updated_at: 0, password: 0, __v: 0 }
-      ).exec()) as IUser | null;
-
-      if (!user) {
-        return next(new Error("Wrong token!"));
-      }
-
-      req.user = user;
-
-      console.log(req.user);
-      next();
-    } catch (error) {
-      return next(new Error("Invalid token!"));
-    }
-  } else {
-    next();
+io.use(async (socket: AuthenticatedSocket, next: Function) => {
+  if (!socket.handshake.headers.cookie) {
+    return next(new Error("No token"));
   }
+
+  const parsedCookie = cookie.parse(socket.handshake.headers.cookie);
+
+  if (!parsedCookie["access_token"]) {
+    return next(new Error("No token"));
+  }
+
+  const verify = await verifyAccessToken(parsedCookie["access_token"]);
+
+  if (!verify.ok) {
+    return next(new Error(verify.message as string));
+  }
+
+  socket.user = verify.data;
+  console.log(socket.user);
+  next();
 });
 
-io.on("connection", (socket) => {
-  const req = socket.request as Request;
+io.on("connection", (socket: AuthenticatedSocket) => {
+  // update the user's online status to online
+  updateUserOnlineStatus(socket.user?._id, true);
+  console.log(`user:${socket.user}`);
 
-  console.log(`user:${req.user}`);
+  socket.on("disconnect", () => {
+    updateUserOnlineStatus(socket.user?._id, false);
+    console.log(`user:${socket.user?.name} disconnected`);
+  });
 });
 
 server.listen(3001, () => {

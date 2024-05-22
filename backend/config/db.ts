@@ -1,5 +1,5 @@
-import mongoose, { ConnectOptions } from "mongoose";
-import removeExpiredTokens from "../utils/removeExpiredResetTokens";
+import mongoose from "mongoose";
+import { removeExpiredTokens } from "../utils/utils";
 
 async function connectToDB() {
   try {

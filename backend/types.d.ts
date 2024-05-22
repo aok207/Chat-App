@@ -23,5 +23,5 @@ export type JwtPayload = {
 };
 
 interface AuthenticatedSocket extends Socket {
-  user?: IUser;
+  user?: IUser | null;
 }

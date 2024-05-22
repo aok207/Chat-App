@@ -15,10 +15,15 @@ const User = ({
         !latestChat ? "items-center" : ""
       }`}
     >
-      <Avatar>
-        <AvatarImage src={user.avatar as string} />
-        <AvatarFallback>{makeFallbackAvatar(user.name)}</AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar>
+          <AvatarImage src={user.avatar as string} />
+          <AvatarFallback>{makeFallbackAvatar(user.name)}</AvatarFallback>
+        </Avatar>
+        {user.isOnline && (
+          <div className="w-3 h-3 bg-green-600 absolute right-0 bottom-0 rounded-full" />
+        )}
+      </div>
       <div>
         <span className="font-semibold text-sm">{user.name}</span>
       </div>
