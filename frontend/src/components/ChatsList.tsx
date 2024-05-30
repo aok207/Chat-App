@@ -4,49 +4,25 @@ import { useQuery } from "react-query";
 import { searchUsersByName } from "@/api/users";
 import { cn, showToast } from "@/lib/utils";
 import Search from "./Search";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import Chat from "./Chat";
-import { Link } from "react-router-dom";
-
-// dummy data
-const chats = [
-  {
-    id: "1",
-    name: "AOK",
-    latestMessage:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, esse consequuntur minima assumenda excepturi provident, quas voluptatum iure necessitatibus aliquam error veritatis voluptate voluptas officia consequatur. Corrupti porro distinctio dolores!",
-    latestTime: "yesterday",
-    isOnline: true,
-    avatar: "https://i.ibb.co/pzwJgRx/1a03dc4738fe.jpg",
-  },
-  {
-    id: "2",
-    name: "Test1",
-    latestMessage:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, esse consequuntur minima assumenda excepturi provident, quas voluptatum iure necessitatibus aliquam error veritatis voluptate voluptas officia consequatur. Corrupti porro distinctio dolores!",
-    latestTime: "yesterday",
-    isOnline: false,
-    avatar: "https://i.ibb.co/pzwJgRx/1a03dc4738fe.jpg",
-  },
-  {
-    id: "3",
-    name: "Test2",
-    latestMessage:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, esse consequuntur minima assumenda excepturi provident, quas voluptatum iure necessitatibus aliquam error veritatis voluptate voluptas officia consequatur. Corrupti porro distinctio dolores!",
-    latestTime: "yesterday",
-    isOnline: true,
-    avatar: "https://i.ibb.co/pzwJgRx/1a03dc4738fe.jpg",
-  },
-];
+import { getChatsForUser } from "@/api/messages";
+import Spinner from "./ui/spinner";
+import { ChatResponseType } from "@/types/types";
+import { useEffect, useState } from "react";
+import { socket } from "@/sockets/sockets";
 
 const ChatsList = () => {
-  const user = useAppSelector((state) => state.auth.user);
+  const currentUser = useAppSelector((state) => state.auth.user);
   const searchQuery = useAppSelector((state) => state.ui.searchQuery);
   const currentPage = useAppSelector((state) => state.ui.currentPage);
 
+  const [chats, setChats] = useState<ChatResponseType[]>([]);
+
   // search users query
   const searchUsersQuery = useQuery({
+    enabled: searchQuery !== "",
     queryFn: () => searchUsersByName(searchQuery),
     queryKey: ["users", "profile", "search", { name: searchQuery }],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,48 +32,130 @@ const ChatsList = () => {
     },
   });
 
+  // get user's chats
+  const chatsQuery = useQuery({
+    queryFn: getChatsForUser,
+    queryKey: ["chats"],
+    onSuccess: (data) => {
+      setChats(data.data);
+    },
+  });
+
+  // socket io events
+  useEffect(() => {
+    socket.on("user online", (otherUserId: string) => {
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.otherUser._id === otherUserId) {
+            return {
+              ...chat,
+              otherUser: { ...chat.otherUser, isOnline: true },
+            };
+          }
+          return chat;
+        })
+      );
+    });
+
+    socket.on("user offline", (otherUserId: string) => {
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.otherUser._id === otherUserId) {
+            return {
+              ...chat,
+              otherUser: { ...chat.otherUser, isOnline: false },
+            };
+          }
+          return chat;
+        })
+      );
+    });
+
+    return () => {
+      socket.off("user online");
+      socket.off("user offline");
+    };
+  }, []);
+
   return (
     <div className="flex flex-col gap-4 px-3 overflow-auto h-full">
       <Tabs className={cn("w-full h-full flex flex-col")} defaultValue="chats">
         <div className="w-full flex gap-2 items-center h-fit">
-          <div className="flex-grow">
-            <Navbar user={user} searchUsersQuery={searchUsersQuery} />
-          </div>
-          <TabsList className={cn("flex flex-shrink-0")}>
-            <TabsTrigger
-              value="chats"
-              className={cn(
-                "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
+          <LayoutGroup>
+            <div className="flex-grow">
+              <Navbar user={currentUser} searchUsersQuery={searchUsersQuery} />
+            </div>
+            <AnimatePresence mode="popLayout">
+              {currentPage !== "search" && (
+                <motion.div
+                  className="flex flex-shrink-0"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  layout
+                >
+                  <TabsList className={cn("flex")}>
+                    <TabsTrigger
+                      value="chats"
+                      className={cn(
+                        "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
+                      )}
+                    >
+                      Chats
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="groups"
+                      className={cn(
+                        "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
+                      )}
+                    >
+                      Groups
+                    </TabsTrigger>
+                  </TabsList>
+                </motion.div>
               )}
-            >
-              Chats
-            </TabsTrigger>
-            <TabsTrigger
-              value="groups"
-              className={cn(
-                "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
-              )}
-            >
-              Groups
-            </TabsTrigger>
-          </TabsList>
+            </AnimatePresence>
+          </LayoutGroup>
         </div>
         {currentPage !== "search" ? (
           <>
             <TabsContent value="chats" className="h-full w-full">
-              <div className="flex flex-col gap-2 w-full">
-                {chats.map((chat, index) => (
-                  <Link to={`/chats/${chat.id}`} key={index}>
-                    <Chat
-                      chatId={chat.id}
-                      latestMessage={chat.latestMessage}
-                      isOnline={chat.isOnline}
-                      avatar={chat.avatar}
-                      latestTime={chat.latestTime}
-                      name={chat.name}
-                    />
-                  </Link>
-                ))}
+              <div
+                className={`flex flex-col gap-2 w-full text-center ${
+                  chatsQuery.isLoading
+                    ? "h-full items-center justify-center"
+                    : chatsQuery.data?.data.length === 0
+                    ? "h-full items-center justify-center"
+                    : ""
+                }`}
+              >
+                {chatsQuery.isLoading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    {chats.length === 0 ? (
+                      <p className="text-sm font-semibold">
+                        You currently have no chats!
+                      </p>
+                    ) : (
+                      <>
+                        {chats.map((chat) => (
+                          <Chat
+                            chatId={chat.otherUser._id}
+                            latestMessage={chat.latestMessage}
+                            isOnline={chat.otherUser.isOnline}
+                            avatar={chat.otherUser.avatar}
+                            latestTime={chat.latestTime}
+                            name={chat.otherUser.name}
+                            latestMessageStatus={chat.latestMessageStatus}
+                            latestMessageSenderId={chat.latestMessageSenderId}
+                            key={chat.otherUser._id}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </TabsContent>
             <TabsContent value="groups" className="h-full">
@@ -110,6 +168,7 @@ const ChatsList = () => {
               <Search
                 isLoading={searchUsersQuery.isLoading}
                 users={searchUsersQuery.data?.data}
+                chats={chatsQuery.data?.data}
               />
             )}
           </AnimatePresence>

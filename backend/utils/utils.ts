@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import ResetToken from "../models/resetTokenModel";
-import { IUser, JwtPayload } from "../types";
+import { AuthenticatedSocket, IUser, JwtPayload } from "../types";
 import User from "../models/userModel";
+import Friend from "../models/friendModel";
 
 export function createToken(info: { id?: mongoose.ObjectId; email?: string }) {
   const jwtSecret = process.env.JWT_ACCESS_SECRET as string;
@@ -55,6 +56,30 @@ export async function updateUserOnlineStatus(
   const user = await User.findById(id);
 
   user!.isOnline = isOnline;
+  if (!isOnline) {
+    user!.lastOnline = new Date();
+  }
 
   await user?.save();
+}
+
+export async function getFriends(
+  id: mongoose.Types.ObjectId | string | undefined
+) {
+  const friends = await Friend.findOne({ userId: id });
+
+  return friends;
+}
+
+export function emitEvent(
+  usersMap: Map<string, AuthenticatedSocket>,
+  targetId: string,
+  event: string,
+  userId: mongoose.Types.ObjectId | undefined
+) {
+  const targetSocket = usersMap.get(targetId);
+
+  if (targetSocket) {
+    targetSocket.emit(event, userId);
+  }
 }

@@ -17,7 +17,7 @@ const Navbar = ({
   const navigate = useNavigate();
 
   return (
-    <div className="flex w-full gap-3">
+    <div className="flex w-full gap-3 items-center h-full">
       <Sheet>
         <SheetTrigger>
           <Menu />

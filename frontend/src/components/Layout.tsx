@@ -9,10 +9,11 @@ import { useAppSelector } from "@/hooks/hooks";
 import { Outlet } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
 import { socket } from "@/sockets/sockets";
-import { showToast } from "@/lib/utils";
+import { useQueryClient } from "react-query";
 
 const Layout = () => {
   const currentPage = useAppSelector((state) => state.ui.currentPage);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // connect to sockets.io
@@ -20,13 +21,13 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      showToast("success", "Connected to socket server!");
-    });
-
     socket.on("connect_error", (err) => {
       console.log(err);
-      showToast("error", err.message);
+    });
+
+    // receiving message event if the user is on other pages
+    socket.on("receive message", () => {
+      queryClient.invalidateQueries(["chats"]);
     });
 
     return () => {

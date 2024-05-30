@@ -14,6 +14,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { serverBaseUrl } from "@/lib/constants";
 import { useEffect } from "react";
 import { showToast } from "@/lib/utils";
+import { socket } from "@/sockets/sockets";
 
 type AuthFormProps = {
   type: "login" | "register";
@@ -45,6 +46,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
     enabled: loginMutation.isSuccess,
     onSuccess: (data) => {
       dispatch(login(data));
+      socket.connect();
       data?.name !== null && showToast("success", `Welcome ${data?.name}`);
       navigate("/");
     },

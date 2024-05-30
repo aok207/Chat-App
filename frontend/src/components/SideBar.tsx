@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SheetContent, SheetHeader, SheetClose } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, makeFallbackAvatar, showToast } from "@/lib/utils";
+import { cn, showToast } from "@/lib/utils";
 import { ChangeEvent, FormEvent, useState } from "react";
 import {
   Edit,
@@ -25,6 +24,8 @@ import { Switch } from "./ui/switch";
 import { useTheme } from "./theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { UserType } from "@/types/types";
+import Avatar from "./Avatar";
+import { socket } from "@/sockets/sockets";
 
 type SideBarProps = {
   user: UserType | null;
@@ -89,6 +90,7 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
     },
     onSuccess: (data) => {
       dispatch(logout());
+      socket.disconnect();
       navigate("/login");
       showToast("success", data.message);
     },
@@ -99,18 +101,11 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
       <SheetHeader className={cn("flex flex-col justify-between h-full")}>
         <div className="flex flex-col items-start justify-center gap-4 w-full">
           <div className="flex gap-3 items-center ml-3 group">
-            <div className="relative">
-              <Avatar>
-                <AvatarImage
-                  src={`${user?.avatar}`}
-                  alt={`profile-of-${name}`}
-                />
-                <AvatarFallback>
-                  {makeFallbackAvatar(user?.name as string)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="w-3 h-3 bg-green-600 absolute right-0 bottom-0 rounded-full" />
-            </div>
+            <Avatar
+              image={`${user?.avatar}`}
+              name={user?.name as string}
+              isOnline={user?.isOnline as boolean}
+            />
             {isNameInEditMode ? (
               <form onSubmit={handleChangeUsername}>
                 <div className="flex gap-2">

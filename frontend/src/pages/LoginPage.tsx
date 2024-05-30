@@ -12,37 +12,26 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { pageVariant } from "@/framerMotion/variants";
-import { showToast } from "@/lib/utils";
 import { socket } from "@/sockets/sockets";
 
 const LoginPage = () => {
   const [target, setTargetPage] = useState("");
 
   useEffect(() => {
-    const handleConnect = () => {
-      showToast("success", "Connected to socket server!");
-    };
-
-    // connect to sockets.io
-    socket.connect();
-    socket.on("connect", handleConnect);
-
-    return () => {
-      socket.off("connect", handleConnect);
-    };
+    socket.disconnect();
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-3 w-full h-full">
       <motion.img
         exit={target !== "register" ? { opacity: 0 } : {}}
         src="/auth_bg.jpg"
         alt=""
-        className="hidden md:flex md:col-span-2 w-full h-full"
+        className="hidden lg:flex lg:col-span-2 w-full h-full"
       />
       <motion.div
         exit={target !== "register" ? { opacity: 0 } : {}}
-        className="w-full h-full col-span-1 pt-8"
+        className="w-full h-full col-span-1 lg:pt-8"
       >
         <Card className="w-full h-full col-span-1 pt-4 overflow-x-hidden">
           <motion.div

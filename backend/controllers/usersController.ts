@@ -7,6 +7,8 @@ function getUserProfile(req: Request, res: Response) {
   res.status(200).json(req.user);
 }
 
+const allowedExtensions = ["image/jpeg", "image/jpg", "image/png"];
+
 async function updateUserProfile(req: Request, res: Response) {
   // get the details user submitted
   const { email, name } = req.body;
@@ -25,6 +27,19 @@ async function updateUserProfile(req: Request, res: Response) {
 
   // if there is a new avatar upload it to a image storage api
   if (avatar) {
+    // validate the uploaded file
+    if (!allowedExtensions.includes(avatar.mimetype)) {
+      return res
+        .status(415)
+        .json({ error: "The avatar file type is not allowed!" });
+    }
+
+    if (avatar.size > 10000000) {
+      return res
+        .status(413)
+        .json({ error: "The file size cannot be larger than 10 MB!" });
+    }
+
     try {
       const formData = new FormData();
       formData.append("image", avatar.buffer.toString("base64"));

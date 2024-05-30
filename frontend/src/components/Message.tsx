@@ -1,63 +1,93 @@
 import { CheckCheck, CircleX } from "lucide-react";
-import Spinner from "./ui/spinner";
-import { forwardRef } from "react";
+import { useAppSelector } from "@/hooks/hooks";
+import Avatar from "./Avatar";
+import { formatTime } from "@/lib/utils";
 
 type MessageProps = {
-  userId: string;
   senderId: string;
   message: string;
-  sentTime: string;
+  avatar: string | null | undefined;
+  sentTime: Date;
   status?: "sent" | "sending" | "read" | "error" | string;
-  previousSenderId: string;
+  previousSenderId: string | null;
+  name: string;
 };
 
-const Message = forwardRef<HTMLDivElement, MessageProps>(
-  ({ userId, senderId, message, sentTime, status, previousSenderId }, ref) => {
-    return (
+const Message = ({
+  senderId,
+  message,
+  sentTime,
+  status,
+  previousSenderId,
+  avatar,
+  name,
+}: MessageProps) => {
+  const userId = useAppSelector((state) => state.auth.user?._id);
+
+  return (
+    <div
+      className={`w-full h-fit flex ${
+        userId === senderId ? "justify-end" : "justify-start"
+      }`}
+    >
       <div
-        className={`w-full h-fit flex ${
-          userId === senderId ? "justify-end" : "justify-start"
+        className={`max-w-[45%] relative flex flex-col items-start gap-2 ${
+          userId === senderId ? "flex-row-reverse" : "flex-row"
         }`}
       >
-        <div className="max-w-[45%] flex-col flex items-end" ref={ref}>
+        <div
+          className={`flex gap-2 items-center ${
+            userId === senderId ? "flex-row-reverse" : "flex-row"
+          }`}
+        >
+          <Avatar name={name} image={`${avatar}`} isOnline={false} />
           <div
-            className={`px-2 py-3 ${
-              status !== "error"
-                ? "bg-slate-300 dark:bg-slate-600"
-                : "bg-red-600"
-            } flex flex-col gap-1 ${
+            className={`px-2 py-1 ${
+              status !== "error" ? "bg-gray-200 dark:bg-gray-700" : "bg-red-600"
+            } flex flex-col h-fit ${
               senderId === previousSenderId
                 ? "rounded-lg"
                 : senderId === userId
-                ? "rounded-lg rounded-br-none"
-                : "rounded-lg rounded-bl-none"
+                ? "rounded-xl rounded-tr-none"
+                : "rounded-xl rounded-tl-none"
             }`}
           >
-            <p className="text-sm">{message}</p>
-            <div className="w-full flex justify-between items-center">
-              <span className="text-xs font-medium dark:text-slate-300 text-slate-800">
-                {sentTime}
-              </span>
-              {status === "read" && (
-                <CheckCheck className="text-purple-500 w-4 h-4" />
+            <pre className="text-[1rem] font-normal font-sans text-gray-900 dark:text-white text-left">
+              {message}
+            </pre>
+            <div className="w-full h-full flex-shrink-0">
+              {senderId === userId && status === "read" && (
+                <CheckCheck className="text-purple-500 w-3.5 h-3.5 flex-shrink-0" />
               )}
-              {status === "sending" && (
-                <div className="flex-shrink-0 w-fit h-fit">
-                  <Spinner />
+              {senderId === userId && status === "sending" && (
+                <div className="text-xs font-normal text-gray-400">
+                  Sending...
                 </div>
               )}
-              {status === "sent" && <CheckCheck className="w-4 h-4" />}
+              {senderId === userId && status === "sent" && (
+                <CheckCheck className="w-3.5 h-3.5" />
+              )}
+              {senderId === userId && status === "error" && (
+                <span className="text-xs font-semibold flex gap-1">
+                  <CircleX className="w-4 h-4 text-red-600" /> Couldn't sent
+                </span>
+              )}
             </div>
           </div>
-          {status === "error" && (
-            <span className="text-xs font-semibold flex gap-1">
-              <CircleX className="w-4 h-4 text-red-600" /> Couldn't sent
-            </span>
-          )}
         </div>
+
+        <span className="text-xs font-medium dark:text-slate-300 text-slate-800">
+          {formatTime(
+            new Date(sentTime).toLocaleString(navigator.language, {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })
+          )}
+        </span>
       </div>
-    );
-  }
-);
+    </div>
+  );
+};
 
 export default Message;

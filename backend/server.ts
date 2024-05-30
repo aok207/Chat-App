@@ -6,7 +6,8 @@ import bodyParser from "body-parser";
 import connectToDB from "./config/db";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import authRouter from "./routes/authRoutes";
-import usersRouter from "./routes/usersRoute";
+import userRouter from "./routes/userRoutes";
+import messageRouter from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
@@ -41,7 +42,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1", messageRouter);
 
 // Error and not found middleware
 app.use(notFound);

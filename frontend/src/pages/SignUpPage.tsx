@@ -14,11 +14,11 @@ import { pageVariant } from "@/framerMotion/variants";
 
 const SignUpPage = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-3 w-full h-full">
       <img
         src="/auth_bg.jpg"
         alt=""
-        className="hidden md:flex md:col-span-2 w-full h-full"
+        className="hidden lg:flex lg:col-span-2 w-full h-full"
       />
 
       <Card className="w-full h-full col-span-1 pt-4 overflow-x-hidden">

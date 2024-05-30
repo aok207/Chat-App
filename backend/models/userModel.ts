@@ -6,6 +6,7 @@ export interface IUser extends Document {
   password?: string;
   avatar?: string;
   isOnline?: boolean;
+  lastOnline?: Date | null;
   provider?: string;
 }
 
@@ -30,6 +31,11 @@ const userSchema = new Schema({
   isOnline: {
     type: Boolean,
     default: false,
+  },
+  lastOnline: {
+    type: Date,
+    default: null,
+    required: false,
   },
   provider: {
     type: String,

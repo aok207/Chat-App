@@ -4,7 +4,25 @@ export type UserType = {
   email: string;
   avatar: string | null;
   isOnline: boolean;
-  provider: "google" | "github" | null;
+  lastOnline: Date | null;
+};
+
+export type ChatResponseType = {
+  latestMessage: string | null;
+  latestTime: Date | null;
+  latestMessageStatus: string | null;
+  latestMessageSenderId: string;
+  otherUser: UserType;
+};
+
+export type MessageType = {
+  _id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export interface IUserAuthInputs {

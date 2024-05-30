@@ -9,7 +9,16 @@ export interface IUser {
   isOnline: boolean | undefined;
   avatar: string | null | undefined;
   provider: "google" | "github" | null | undefined;
+  lastOnline: Date | null;
 }
+
+export type ChatResponseType = {
+  latestMessage: string | null;
+  latestTime: Date | null;
+  latestMessageStatus: string | null;
+  latestMessageSenderId: mongoose.Types.ObjectId;
+  otherUser: IUser;
+};
 
 declare module "express-serve-static-core" {
   interface Request {

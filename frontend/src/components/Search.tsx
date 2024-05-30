@@ -1,9 +1,9 @@
 import { useAppSelector } from "@/hooks/hooks";
-import { UserType } from "@/types/types";
+import { ChatResponseType, UserType } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import User from "./User";
 import { Skeleton } from "./ui/skeleton";
+import Chat from "./Chat";
 
 const containerVariant = {
   hidden: { opacity: 0 },
@@ -33,9 +33,11 @@ const userItemVariant = {
 const Search = ({
   isLoading,
   users,
+  chats,
 }: {
   isLoading: boolean;
   users: UserType[];
+  chats: ChatResponseType[] | undefined;
 }) => {
   const searchQuery = useAppSelector((state) => state.ui.searchQuery);
   const currentPage = useAppSelector((state) => state.ui.currentPage);
@@ -83,7 +85,34 @@ const Search = ({
                 >
                   {users?.map((user) => (
                     <motion.div key={user.name} variants={userItemVariant}>
-                      <User user={user} />
+                      {chats?.filter((chat) => chat.otherUser._id === user._id)
+                        .length === 0 ? (
+                        <Chat
+                          chatId={user._id}
+                          latestMessage={null}
+                          latestTime={null}
+                          avatar={user.avatar}
+                          name={user.name}
+                          isOnline={user.isOnline}
+                        />
+                      ) : (
+                        <Chat
+                          chatId={user._id}
+                          latestMessage={
+                            chats?.filter(
+                              (chat) => chat.otherUser._id === user._id
+                            )[0].latestMessage
+                          }
+                          latestTime={
+                            chats?.filter(
+                              (chat) => chat.otherUser._id === user._id
+                            )[0].latestTime
+                          }
+                          avatar={user.avatar}
+                          name={user.name}
+                          isOnline={user.isOnline}
+                        />
+                      )}
                     </motion.div>
                   ))}
                   {users?.length === 0 && (

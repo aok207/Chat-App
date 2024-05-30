@@ -25,7 +25,7 @@ const App = () => {
             <Route path="/" element={<Layout />}>
               <Route element={<HomePage />} index />
               <Route element={<SettingsPage />} path="/settings" />
-              <Route element={<IndividualChatPage />} path="/chats/:id" />
+              <Route element={<IndividualChatPage />} path="/chat/:id" />
             </Route>
             <Route
               element={

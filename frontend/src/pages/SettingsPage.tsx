@@ -11,7 +11,7 @@ import Spinner from "@/components/ui/spinner";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { makeFallbackAvatar, showToast } from "@/lib/utils";
 import { login, logout } from "@/slices/authSlice";
-import { setCurrentPage } from "@/slices/uiSlice";
+import { setCurrentPage, setSearchQuery } from "@/slices/uiSlice";
 import { IUpdatePasswordInputs, IUpdateProfileInputs } from "@/types/types";
 import { ArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -30,6 +30,7 @@ const SettingsPage = () => {
   // set the ui-state in the redux store to settings
   useEffect(() => {
     dispatch(setCurrentPage("settings"));
+    dispatch(setSearchQuery(""));
   }, []);
 
   // Form to update the user's profile
@@ -140,14 +141,46 @@ const SettingsPage = () => {
                     {makeFallbackAvatar(user?.name as string)}
                   </AvatarFallback>
                 </Avatar>
-                <Input
-                  type="file"
-                  id="profile-picture"
-                  {...updateProfileForm.register("profilePicture")}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setAvatar(URL.createObjectURL(e.target.files![0] as File));
-                  }}
-                />
+                <div className="flex flex-col gap-0.5">
+                  <Input
+                    type="file"
+                    id="profile-picture"
+                    accept="image/jpeg, image/jpg, image/png"
+                    {...updateProfileForm.register("profilePicture", {
+                      validate: (fileList) => {
+                        const file = fileList![0];
+                        const validTypes = [
+                          "image/jpeg",
+                          "image/jpg",
+                          "image/png",
+                        ];
+                        if (file) {
+                          if (!validTypes.includes(file.type)) {
+                            return "Invalid file type!";
+                          }
+
+                          if (file.size > 10000000) {
+                            return "File size cannot be larger than 10 mb!";
+                          }
+                        }
+                      },
+                    })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setAvatar(
+                        URL.createObjectURL(e.target.files![0] as File)
+                      );
+                    }}
+                  />
+                  <span className="text-xs font-semibold text-purple-500">
+                    The accepted file types are pngs, jpegs and jpgs. And the
+                    size limit is 10MB
+                  </span>
+                </div>
+                {updateProfileForm.formState.errors?.profilePicture && (
+                  <p className="font-semibold text-sm text-red-600">
+                    {updateProfileForm.formState.errors?.profilePicture.message}
+                  </p>
+                )}
 
                 <Label htmlFor="email">Your Email</Label>
                 <Input

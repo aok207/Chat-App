@@ -1,14 +1,18 @@
-import { cn, makeFallbackAvatar } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import Avatar from "./Avatar";
+import { useAppSelector } from "@/hooks/hooks";
+import { CheckCheck } from "lucide-react";
+import { formatSentDate } from "@/lib/utils";
 
 type ChatProps = {
   chatId: string;
-  latestMessage: string;
+  latestMessage: string | null | undefined;
   name: string;
   avatar: string | null;
   isOnline: boolean;
-  latestTime: string;
+  latestTime: Date | null | undefined;
+  latestMessageStatus: string | null;
+  latestMessageSenderId: string;
 };
 
 const Chat = ({
@@ -18,38 +22,59 @@ const Chat = ({
   avatar,
   isOnline,
   latestTime,
+  latestMessageStatus,
+  latestMessageSenderId,
 }: ChatProps) => {
   const { id } = useParams();
+  const userId = useAppSelector((state) => state.auth.user?._id);
 
   return (
-    <div
-      className={`w-full h-fit p-2 flex gap-2 items-center justify-start rounded-lg hover:bg-slate-200 hover:dark:bg-slate-500 transition-colors duration-300 ${
-        id === chatId ? "bg-slate-200 dark:bg-slate-500" : "bg-transparent"
-      }`}
-    >
-      <div>
-        <Avatar className={cn("relative")}>
-          <AvatarImage src={avatar as string} />
-          <AvatarFallback>{makeFallbackAvatar(name)}</AvatarFallback>
-          {isOnline && (
-            <div className="w-2 h-2 bg-green-600 absolute bottom-0 left-full" />
-          )}
-        </Avatar>
-      </div>
-      <div className="flex flex-col gap-2 overflow-hidden">
-        <div className="flex justify-between w-full">
-          <p className="font-semibold dark:text-white text-black text-sm">
-            {name}
-          </p>
-          <span className="text-xs font-medium dark:text-slate-300 text-slate-800">
-            {latestTime}
-          </span>
+    <Link to={`/chat/${chatId}`} className="w-full h-fit">
+      <div
+        className={`w-full h-fit p-2 flex gap-2 items-center justify-start rounded-lg hover:bg-slate-200 hover:dark:bg-slate-500 transition-colors duration-300 ${
+          id === chatId ? "bg-slate-200 dark:bg-slate-500" : "bg-transparent"
+        }`}
+      >
+        <div>
+          <Avatar name={name} image={`${avatar}`} isOnline={isOnline} />
         </div>
-        <p className="truncate text-nowrap text-sm font-medium dark:text-slate-300 text-slate-800">
-          {latestMessage}
-        </p>
+        <div className="flex flex-col w-full items-start gap-1 overflow-hidden">
+          <div className="flex justify-between w-full">
+            <p className="font-semibold dark:text-white text-black text-sm">
+              {name}
+            </p>
+            <span className="text-xs font-medium dark:text-slate-300 text-slate-800">
+              {latestTime && formatSentDate(latestTime)}
+            </span>
+          </div>
+          <div className="w-full text-left relative">
+            <p
+              className={`truncate w-[85%] text-sm  ${
+                latestMessageSenderId !== userId &&
+                latestMessageStatus !== "read"
+                  ? "dark:text-white text-black font-bold"
+                  : "font-normal dark:text-slate-300 text-slate-500"
+              } `}
+            >
+              {latestMessage}
+            </p>
+
+            {latestMessageSenderId !== userId &&
+              latestMessageStatus !== "read" && (
+                <div className="w-3 h-3 rounded-full absolute bottom-2 right-2 shadow-md bg-purple-500" />
+              )}
+            {latestMessageSenderId === userId &&
+              latestMessageStatus === "sent" && (
+                <CheckCheck className="w-3 h-3 absolute bottom-2 right-2" />
+              )}
+            {latestMessageSenderId === userId &&
+              latestMessageStatus === "read" && (
+                <CheckCheck className="w-3 h-3 absolute bottom-2 right-2 text-purple-500" />
+              )}
+          </div>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
