@@ -1,1 +1,1 @@
-# Real-time chat app with mern stack, sockets.io, and typescript.
+# Real-time chat app with mern stack, socket.io, and typescript.
