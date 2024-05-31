@@ -230,15 +230,18 @@ const Messages = ({
             );
 
             return (
-              <>
+              <div
+                className="w-full text-center"
+                key={`${index}-${message._id}`}
+              >
                 {index === 0 ? (
-                  <p className="font-medium text-sm text-slate-600 dark:text-slate-200">
+                  <p className="font-medium mb-3 text-sm text-slate-600 dark:text-slate-200">
                     {formatSentDate(message.createdAt)}
                   </p>
                 ) : (
                   prvMsgSentTime.getTime() !==
                     currentMessageSentTime.getTime() && (
-                    <p className="font-medium text-sm text-slate-600 dark:text-slate-200">
+                    <p className="font-medium mb-3 text-sm text-slate-600 dark:text-slate-200">
                       {today.getTime() === currentMessageSentTime.getTime()
                         ? "Today"
                         : formatSentDate(message.createdAt)}
@@ -246,8 +249,9 @@ const Messages = ({
                   )
                 )}
                 <Message
-                  key={`${index}-${message._id}`}
+                  id={message._id}
                   message={message.content}
+                  type={message.type}
                   avatar={
                     message.senderId === currentUser?._id
                       ? (currentUser?.avatar as string)
@@ -264,8 +268,9 @@ const Messages = ({
                   }
                   sentTime={message.createdAt}
                   status={message.status}
+                  initialReactions={message.reactions}
                 />
-              </>
+              </div>
             );
           })}
         <AnimatePresence>

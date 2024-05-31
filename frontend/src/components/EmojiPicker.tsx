@@ -7,10 +7,16 @@ import { useTheme } from "./theme-provider";
 
 const EmojiPicker = ({
   isReaction,
-  onClick,
+  onEmojiClick,
+  onReactionClick,
+  className,
+  width,
 }: {
   isReaction: boolean;
-  onClick: (emojiData: EmojiClickData, event: MouseEvent) => void;
+  onEmojiClick?: (emojiData: EmojiClickData, event: MouseEvent) => void;
+  onReactionClick?: (emojiData: EmojiClickData, event: MouseEvent) => void;
+  className?: string;
+  width?: number;
 }) => {
   const appTheme = useTheme().theme;
 
@@ -24,9 +30,14 @@ const EmojiPicker = ({
   return (
     <ReactEmojiPicker
       theme={theme}
+      width={width || 350}
       emojiStyle={EmojiStyle.FACEBOOK}
-      onEmojiClick={onClick}
+      onEmojiClick={onEmojiClick && onEmojiClick}
+      onReactionClick={onReactionClick && onReactionClick}
       reactionsDefaultOpen={isReaction}
+      reactions={["1f44d", "1f606", "1f622", "1f62e", "1f621", "2764-fe0f"]}
+      className={className || ""}
+      lazyLoadEmojis={true}
     />
   );
 };

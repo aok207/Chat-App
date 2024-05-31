@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { removeExpiredTokens } from "../utils/utils";
+import Message from "../models/messageModel";
 
 async function connectToDB() {
   try {

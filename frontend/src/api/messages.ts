@@ -33,3 +33,31 @@ export function getMessages({
 export function markAsRead(id: string) {
   return api.patch(`/messages/${id}/mark-as-read`).then((res) => res.data);
 }
+
+export function addReaction({
+  messageId,
+  emoji,
+}: {
+  messageId: string;
+  emoji: string;
+}): Promise<{ data: { reaction: string; originalReaction: string } }> {
+  return api
+    .patch(`/messages/${messageId}/add-reaction`, { emoji })
+    .then((res) => res.data);
+}
+
+export function removeReaction({
+  messageId,
+  emoji,
+}: {
+  messageId: string;
+  emoji: string;
+}): Promise<{
+  data: {
+    emoji: string;
+  };
+}> {
+  return api
+    .delete(`/messages/${messageId}/remove-reaction?emoji=${emoji}`)
+    .then((res) => res.data);
+}

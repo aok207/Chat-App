@@ -1,10 +1,12 @@
 import { model, Types, Schema, Document } from "mongoose";
 
-export interface IMessage extends Document {
+interface IMessage extends Document {
   senderId: Types.ObjectId;
-  receiverId: Types.ObjectId;
+  receiverId: Types.ObjectId[];
   content: string;
   status: "sent" | "read" | string;
+  reactions: Map<string, Types.ObjectId[]>;
+  type: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -12,9 +14,16 @@ export interface IMessage extends Document {
 const messageSchema = new Schema(
   {
     senderId: { type: Types.ObjectId, ref: "User", required: true },
-    receiverId: { type: Types.ObjectId, ref: "User", required: true },
+    receiverId: [{ type: Types.ObjectId, ref: "User", required: true }],
     content: { type: String, required: true },
     status: { type: String, required: true, default: "sent" },
+    reactions: {
+      type: Map,
+      of: [Types.ObjectId],
+      unique: true,
+      default: {},
+    },
+    type: String,
   },
   { timestamps: true }
 );

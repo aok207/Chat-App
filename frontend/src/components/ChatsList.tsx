@@ -18,7 +18,7 @@ const ChatsList = () => {
   const searchQuery = useAppSelector((state) => state.ui.searchQuery);
   const currentPage = useAppSelector((state) => state.ui.currentPage);
 
-  const [chats, setChats] = useState<ChatResponseType[]>([]);
+  const [chats, setChats] = useState<ChatResponseType[] | null>(null);
 
   // search users query
   const searchUsersQuery = useQuery({
@@ -44,8 +44,11 @@ const ChatsList = () => {
   // socket io events
   useEffect(() => {
     socket.on("user online", (otherUserId: string) => {
-      setChats((prev) =>
-        prev.map((chat) => {
+      setChats((prev) => {
+        if (!prev) {
+          return null;
+        }
+        return prev.map((chat) => {
           if (chat.otherUser._id === otherUserId) {
             return {
               ...chat,
@@ -53,13 +56,16 @@ const ChatsList = () => {
             };
           }
           return chat;
-        })
-      );
+        });
+      });
     });
 
     socket.on("user offline", (otherUserId: string) => {
-      setChats((prev) =>
-        prev.map((chat) => {
+      setChats((prev) => {
+        if (!prev) {
+          return null;
+        }
+        return prev.map((chat) => {
           if (chat.otherUser._id === otherUserId) {
             return {
               ...chat,
@@ -67,8 +73,8 @@ const ChatsList = () => {
             };
           }
           return chat;
-        })
-      );
+        });
+      });
     });
 
     return () => {
@@ -133,25 +139,26 @@ const ChatsList = () => {
                   <Spinner />
                 ) : (
                   <>
-                    {chats.length === 0 ? (
+                    {chats && chats.length === 0 ? (
                       <p className="text-sm font-semibold">
                         You currently have no chats!
                       </p>
                     ) : (
                       <>
-                        {chats.map((chat) => (
-                          <Chat
-                            chatId={chat.otherUser._id}
-                            latestMessage={chat.latestMessage}
-                            isOnline={chat.otherUser.isOnline}
-                            avatar={chat.otherUser.avatar}
-                            latestTime={chat.latestTime}
-                            name={chat.otherUser.name}
-                            latestMessageStatus={chat.latestMessageStatus}
-                            latestMessageSenderId={chat.latestMessageSenderId}
-                            key={chat.otherUser._id}
-                          />
-                        ))}
+                        {chats &&
+                          chats.map((chat) => (
+                            <Chat
+                              chatId={chat.otherUser._id}
+                              latestMessage={chat.latestMessage}
+                              isOnline={chat.otherUser.isOnline}
+                              avatar={chat.otherUser.avatar}
+                              latestTime={chat.latestTime}
+                              name={chat.otherUser.name}
+                              latestMessageStatus={chat.latestMessageStatus}
+                              latestMessageSenderId={chat.latestMessageSenderId}
+                              key={chat.otherUser._id}
+                            />
+                          ))}
                       </>
                     )}
                   </>

@@ -18,9 +18,13 @@ export type ChatResponseType = {
 export type MessageType = {
   _id: string;
   senderId: string;
-  receiverId: string;
+  receiverId: string[];
   content: string;
   status: string;
+  reactions: {
+    [emojiId: string]: string[];
+  };
+  type: string;
   createdAt: Date;
   updatedAt: Date;
 };

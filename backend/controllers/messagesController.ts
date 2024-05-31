@@ -134,9 +134,10 @@ export async function sendMessage(req: Request, res: Response) {
     // save the message in db
     const newMessage = new Message({
       senderId: userId,
-      receiverId,
+      receiverId: [receiverId],
       content: message,
       status: "sent",
+      type: "text",
     });
 
     await newMessage.save();
@@ -174,6 +175,102 @@ export async function sendMessage(req: Request, res: Response) {
     }
 
     res.status(201).json({ data: newMessage });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      error:
+        "Something went wrong while sending the message, please try again!",
+    });
+  }
+}
+
+export async function addReaction(req: Request, res: Response) {
+  const { messageId } = req.params;
+  const { emoji } = req.body;
+  const userId = req.user?._id as mongoose.Types.ObjectId;
+
+  if (!emoji) {
+    return res.status(400).json({ error: "Emoji is required!" });
+  }
+
+  try {
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message doesn't exist!" });
+    }
+
+    if (!message.reactions.get(emoji)) {
+      message.reactions.set(emoji, []);
+    }
+
+    let originalReaction: string | null = null;
+
+    for (const reaction of message.reactions.keys()) {
+      if (message.reactions.get(reaction)?.includes(userId)) {
+        if (reaction === emoji) {
+          return res.status(400).json({ error: "Already gave reaction!" });
+        } else {
+          message.reactions.set(
+            reaction,
+            message.reactions
+              .get(reaction)!
+              .filter((id) => id.toString() !== userId.toString())
+          );
+          originalReaction = reaction;
+          break;
+        }
+      }
+    }
+
+    message.reactions.get(emoji)!.push(userId);
+    await message.save();
+
+    return res.status(200).json({
+      data: {
+        reaction: emoji,
+        originalReaction,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      error:
+        "Something went wrong while sending the message, please try again!",
+    });
+  }
+}
+
+export async function removeReaction(req: Request, res: Response) {
+  const { messageId } = req.params;
+  const { emoji } = req.query;
+  const userId = req.user?._id as mongoose.Types.ObjectId;
+
+  if (!emoji) {
+    return res.status(400).json({ error: "Emoji is required!" });
+  }
+
+  try {
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message doesn't exist!" });
+    }
+
+    const existingReaction = message.reactions.get(emoji as string);
+
+    if (!existingReaction) {
+      return res.status(400).json({ error: "No reaction to remove!" });
+    }
+
+    message.reactions.set(
+      emoji as string,
+      existingReaction.filter((id) => id.toString() !== userId.toString())
+    );
+
+    await message.save();
+
+    return res.status(200).json({ data: { emoji } });
   } catch (err) {
     console.log(err);
     res.status(400).json({

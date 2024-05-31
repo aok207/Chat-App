@@ -76,8 +76,10 @@ const MessageInput = ({
         status: "sending",
         createdAt: new Date(),
         updatedAt: new Date(),
-        receiverId: id,
+        receiverId: [id as string],
         senderId: userId,
+        type: "text",
+        reactions: {},
       } as MessageType,
     ]);
 
@@ -138,7 +140,8 @@ const MessageInput = ({
           <div className="absolute bottom-full right-10">
             <EmojiPicker
               isReaction={false}
-              onClick={(emojiData) => {
+              onEmojiClick={(emojiData) => {
+                console.log(emojiData);
                 textareaRef.current!.value += emojiData.emoji;
                 textareaRef.current?.focus();
               }}
