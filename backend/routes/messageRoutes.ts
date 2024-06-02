@@ -6,6 +6,7 @@ import {
   markAsRead,
   removeReaction,
   addReaction,
+  getReactions,
 } from "../controllers/messagesController";
 import { authOnly } from "../middlewares/authMiddleware";
 
@@ -25,5 +26,6 @@ router.get("/messages", authOnly, getChats);
 // reactions
 router.patch("/messages/:messageId/add-reaction", authOnly, addReaction);
 router.delete("/messages/:messageId/remove-reaction", authOnly, removeReaction);
+router.get("/messages/:messageId/reactions", authOnly, getReactions);
 
 export default router;

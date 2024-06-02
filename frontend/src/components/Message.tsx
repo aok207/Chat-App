@@ -7,9 +7,13 @@ import { Emoji, EmojiStyle } from "emoji-picker-react";
 import EmojiPicker from "./EmojiPicker";
 // import ToolTip from "./ToolTip";
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { addReaction, removeReaction } from "@/api/messages";
 import { EmojiClickData } from "emoji-picker-react";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import ReactionsList from "./ReactionsList";
+import { socket } from "@/sockets/sockets";
+import { useParams } from "react-router-dom";
 
 type MessageProps = {
   id: string;
@@ -45,23 +49,30 @@ const Message = ({
   const [reactions, setReactions] = useState<{ [emojiId: string]: string[] }>(
     initialReactions
   );
+  const queryClient = useQueryClient();
+  const chatId = useParams().id;
 
   // mutations
   const addReactionMutation = useMutation({
     mutationFn: addReaction,
 
     onSuccess: (data) => {
-      setReactions((prev) => {
-        const originalReaction = prev[data.data.originalReaction] || [];
-        const newReaction = prev[data.data.reaction] || [];
-        return {
-          ...prev,
-          [data.data.originalReaction]: originalReaction.filter(
-            (id) => id !== userId
-          ),
-          [data.data.reaction]: [...newReaction, userId],
-        };
-      });
+      addReactionInState(
+        data.data.originalReaction,
+        data.data.reaction,
+        userId
+      );
+
+      // emit a give reaction socket event
+      socket.emit(
+        "give reaction",
+        data.data.originalReaction,
+        data.data.reaction,
+        chatId,
+        id
+      );
+
+      queryClient.invalidateQueries(["message", id, "reactions"]);
     },
 
     onError: (error: any) => {
@@ -74,15 +85,12 @@ const Message = ({
     mutationFn: removeReaction,
 
     onSuccess: (data) => {
-      setReactions((prev) => {
-        return {
-          ...prev,
-          [data.data.emoji]: prev[data.data.emoji].filter((id) => {
-            console.log(id);
-            return id !== userId;
-          }),
-        };
-      });
+      removeReactionInState(data.data.emoji, userId);
+
+      // emit a remove reaction socket event
+      socket.emit("remove reaction", data.data.emoji, chatId, id);
+
+      queryClient.invalidateQueries(["message", id, "reactions"]);
     },
 
     onError: (error: any) => {
@@ -132,10 +140,40 @@ const Message = ({
   }, [reactions, isReactionsVisible]);
 
   // handle adding and removing reactions
-  const handleAddReaction = (emojiData: EmojiClickData) => {
+  const addReactionInState = (
+    ogReaction: string,
+    reaction: string,
+    userId: string
+  ) => {
+    setReactions((prev) => {
+      const originalReaction = prev[ogReaction] || [];
+      const newReaction = prev[reaction] || [];
+      return {
+        ...prev,
+        [ogReaction]: originalReaction.filter((id) => id !== userId),
+        [reaction]: [...newReaction, userId],
+      };
+    });
+  };
+
+  const removeReactionInState = (emoji: string, userId: string) => {
+    setReactions((prev) => {
+      return {
+        ...prev,
+        [emoji]: prev[emoji].filter((id) => {
+          return id !== userId;
+        }),
+      };
+    });
+  };
+
+  const handleReaction = (emojiData: EmojiClickData) => {
     setIsReactionsVisible(false);
 
-    if (reactions[emojiData.unified].includes(userId)) {
+    if (
+      reactions[emojiData.unified] &&
+      reactions[emojiData.unified].includes(userId)
+    ) {
       removeReactionMutation.mutate({
         messageId: id,
         emoji: emojiData.unified,
@@ -146,6 +184,36 @@ const Message = ({
     addReactionMutation.mutate({ messageId: id, emoji: emojiData.unified });
   };
 
+  // socket.io events for reactions
+  useEffect(() => {
+    socket.on(
+      "reaction added",
+      (
+        targetId: string,
+        originalEmoji: string,
+        emoji: string,
+        messageId: string
+      ) => {
+        if (messageId === id) {
+          addReactionInState(originalEmoji, emoji, targetId);
+
+          queryClient.invalidateQueries(["message", id, "reactions"]);
+        }
+      }
+    );
+
+    socket.on(
+      "reaction removed",
+      (targetId: string, emoji: string, messageId: string) => {
+        if (messageId === id) {
+          removeReactionInState(emoji, targetId);
+
+          queryClient.invalidateQueries(["message", id, "reactions"]);
+        }
+      }
+    );
+  }, []);
+
   return (
     <div
       className={`w-full h-fit flex group relative ${
@@ -153,7 +221,7 @@ const Message = ({
       }`}
     >
       <div
-        className={`max-w-[45%] relative flex flex-col gap-2 ${
+        className={`w-[45%] relative flex flex-col gap-2 ${
           userId === senderId
             ? "flex-row-reverse items-end"
             : "flex-row items-start"
@@ -161,13 +229,13 @@ const Message = ({
       >
         {/* Message */}
         <div
-          className={`flex gap-2 items-center z-10 ${
+          className={`flex w-full gap-2 items-center z-10 ${
             userId === senderId ? "flex-row-reverse" : "flex-row"
           }`}
         >
           <Avatar name={name} image={`${avatar}`} isOnline={false} />
           <div
-            className={`px-2 py-1 ${
+            className={`px-2 py-1 relative ${
               status !== "error" ? "bg-gray-200 dark:bg-gray-700" : "bg-red-600"
             } flex flex-col h-fit items-end ${
               senderId === previousSenderId
@@ -201,6 +269,40 @@ const Message = ({
                 </span>
               )}
             </div>
+
+            {/* Reactions */}
+            {Object.values(reactions).flatMap((id) => id).length > 0 && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div
+                    className={`absolute flex gap-1 ${
+                      senderId === userId
+                        ? "left-0 top-full flex-row-reverse"
+                        : "right-0 top-full flex-row"
+                    }  p-1 dark:bg-slate-200/30 bg-white/50 backdrop-blur-sm rounded-full cursor-pointer`}
+                  >
+                    {Object.keys(reactions).map((reaction) => {
+                      if (reactions[reaction].length > 0) {
+                        return (
+                          <Emoji
+                            unified={reaction}
+                            emojiStyle={EmojiStyle.FACEBOOK}
+                            size={15}
+                          />
+                        );
+                      }
+                    })}
+                    {Object.values(reactions).flatMap((id) => id).length >
+                      1 && (
+                      <span className="text-xs font-semibold">
+                        {Object.values(reactions).flatMap((id) => id).length}
+                      </span>
+                    )}
+                  </div>
+                </DialogTrigger>
+                <ReactionsList id={id} />
+              </Dialog>
+            )}
           </div>
 
           {/* Add reaction btn */}
@@ -213,34 +315,6 @@ const Message = ({
               <Smile className="w-4 h-4" />
             </button>
           </div>
-
-          {/* Reactions */}
-          {Object.values(reactions).flatMap((id) => id).length > 0 && (
-            <div
-              className={`absolute flex gap-1 ${
-                senderId === userId
-                  ? "left-[7px] bottom-[8px] flex-row-reverse"
-                  : "right-[7px] bottom-[8px] flex-row"
-              }  p-1 dark:bg-slate-200/30 bg-white/50 backdrop-blur-sm rounded-full`}
-            >
-              {Object.keys(reactions).map((reaction) => {
-                if (reactions[reaction].length > 0) {
-                  return (
-                    <Emoji
-                      unified={reaction}
-                      emojiStyle={EmojiStyle.FACEBOOK}
-                      size={15}
-                    />
-                  );
-                }
-              })}
-              {Object.values(reactions).flatMap((id) => id).length > 1 && (
-                <span className="text-xs font-semibold">
-                  {Object.values(reactions).flatMap((id) => id).length}
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Reactions Picker */}
@@ -254,8 +328,8 @@ const Message = ({
           >
             <EmojiPicker
               isReaction={true}
-              onReactionClick={handleAddReaction}
-              onEmojiClick={handleAddReaction}
+              onReactionClick={handleReaction}
+              onEmojiClick={handleReaction}
               width={300}
             />
           </div>

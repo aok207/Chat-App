@@ -12,7 +12,7 @@ type ChatProps = {
   isOnline: boolean;
   latestTime: Date | null | undefined;
   latestMessageStatus: string | null;
-  latestMessageSenderId: string;
+  latestMessageSenderId: string | null;
 };
 
 const Chat = ({
@@ -29,10 +29,15 @@ const Chat = ({
   const userId = useAppSelector((state) => state.auth.user?._id);
 
   return (
-    <Link to={`/chat/${chatId}`} className="w-full h-fit">
+    <Link
+      to={userId === chatId ? "/" : `/chat/${chatId}`}
+      className="w-full h-fit"
+    >
       <div
         className={`w-full h-fit p-2 flex gap-2 items-center justify-start rounded-lg hover:bg-slate-200 hover:dark:bg-slate-500 transition-colors duration-300 ${
-          id === chatId ? "bg-slate-200 dark:bg-slate-500" : "bg-transparent"
+          id === chatId && latestMessage && latestMessageSenderId
+            ? "bg-slate-200 dark:bg-slate-500"
+            : "bg-transparent"
         }`}
       >
         <div>

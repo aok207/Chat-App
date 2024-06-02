@@ -93,6 +93,42 @@ io.on("connection", async (socket: AuthenticatedSocket) => {
   socket.on("message read", (targetId: string) => {
     emitEvent(onlineUsers, targetId, "other has read message", userId);
   });
+
+  // user gave an reaction event
+  socket.on(
+    "give reaction",
+    (
+      originalEmoji: string,
+      emoji: string,
+      targetId: string,
+      messageId: string
+    ) => {
+      emitEvent(
+        onlineUsers,
+        targetId,
+        "reaction added",
+        userId,
+        originalEmoji,
+        emoji,
+        messageId
+      );
+    }
+  );
+
+  // user removed an reaction event
+  socket.on(
+    "remove reaction",
+    (emoji: string, targetId: string, messageId: string) => {
+      emitEvent(
+        onlineUsers,
+        targetId,
+        "reaction removed",
+        userId,
+        emoji,
+        messageId
+      );
+    }
+  );
 });
 
 server.listen(3001, () => {

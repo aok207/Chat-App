@@ -29,6 +29,12 @@ export type MessageType = {
   updatedAt: Date;
 };
 
+export type ReactionsResponseType = {
+  data: {
+    [emoji: string]: UserType[];
+  };
+};
+
 export interface IUserAuthInputs {
   name?: string;
   email: string;

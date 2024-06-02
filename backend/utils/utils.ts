@@ -36,7 +36,7 @@ export async function verifyAccessToken(
 
     const user = (await User.findOne(
       { _id: decoded.id },
-      { created_at: 0, updated_at: 0, password: 0, __v: 0 }
+      { created_at: 0, updated_at: 0, password: 0, __v: 0, provider: 0 }
     )) as IUser | null;
 
     if (!user) {
@@ -75,11 +75,12 @@ export function emitEvent(
   usersMap: Map<string, AuthenticatedSocket>,
   targetId: string,
   event: string,
-  userId: mongoose.Types.ObjectId | undefined
+  userId: mongoose.Types.ObjectId | undefined,
+  ...data: any[]
 ) {
   const targetSocket = usersMap.get(targetId);
 
   if (targetSocket) {
-    targetSocket.emit(event, userId);
+    targetSocket.emit(event, userId, ...data);
   }
 }

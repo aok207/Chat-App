@@ -1,4 +1,9 @@
-import { ChatResponseType, MessageType, UserType } from "@/types/types";
+import {
+  ChatResponseType,
+  MessageType,
+  ReactionsResponseType,
+  UserType,
+} from "@/types/types";
 import api from "./api";
 
 export function getChatsForUser(): Promise<{
@@ -60,4 +65,12 @@ export function removeReaction({
   return api
     .delete(`/messages/${messageId}/remove-reaction?emoji=${emoji}`)
     .then((res) => res.data);
+}
+
+export function getReactions({
+  messageId,
+}: {
+  messageId: string;
+}): Promise<ReactionsResponseType> {
+  return api.get(`/messages/${messageId}/reactions`).then((res) => res.data);
 }

@@ -125,6 +125,11 @@ export async function sendMessage(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid message!" });
     }
 
+    // You can't message yourself
+    if (userId.toString() === receiverId) {
+      return res.status(400).json({ error: "You can't message yourself!" });
+    }
+
     // check if recieverId exists
     const receiver = await User.findById(receiverId);
     if (!receiver) {
@@ -184,6 +189,7 @@ export async function sendMessage(req: Request, res: Response) {
   }
 }
 
+// Reactions
 export async function addReaction(req: Request, res: Response) {
   const { messageId } = req.params;
   const { emoji } = req.body;
@@ -271,6 +277,66 @@ export async function removeReaction(req: Request, res: Response) {
     await message.save();
 
     return res.status(200).json({ data: { emoji } });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      error:
+        "Something went wrong while sending the message, please try again!",
+    });
+  }
+}
+
+export async function getReactions(req: Request, res: Response) {
+  const { messageId } = req.params;
+
+  try {
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(400).json({ error: "Message does not exist!" });
+    }
+
+    // get all of the users id who reacted the message
+    const userIds = [...message.reactions.values()].flatMap((id) => id);
+
+    if (userIds.length === 0) {
+      return res.status(200).json({ data: {}, message: "No reactions" });
+    }
+
+    // find all of the users with those ids
+    const users: IUser[] = await User.find(
+      { _id: { $in: userIds } },
+      {
+        created_at: 0,
+        password: 0,
+        provider: 0,
+        updated_at: 0,
+        __v: 0,
+      }
+    );
+
+    // create a users map for easy lookup
+    const usersMap = new Map<string, IUser>();
+
+    users.forEach((user) => {
+      usersMap.set(user._id.toString(), user);
+    });
+
+    const reactions: {
+      [emoji: string]: IUser[];
+    } = {};
+
+    for (const [emoji, ids] of message.reactions) {
+      if (ids.length > 0) {
+        reactions[emoji] = ids
+          .map((id) => usersMap.get(id.toString()))
+          .filter((user) => user !== undefined);
+      }
+    }
+
+    console.log(reactions);
+
+    res.status(200).json({ data: reactions });
   } catch (err) {
     console.log(err);
     res.status(400).json({

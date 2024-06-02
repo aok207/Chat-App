@@ -8,7 +8,6 @@ export interface IUser {
   name: string;
   isOnline: boolean | undefined;
   avatar: string | null | undefined;
-  provider: "google" | "github" | null | undefined;
   lastOnline: Date | null;
 }
 

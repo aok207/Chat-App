@@ -6,9 +6,13 @@ import MessageInput from "@/components/MessageInput";
 import { MessageType, UserType } from "@/types/types";
 import Messages from "@/components/Messages";
 import ChatNav from "@/components/ChatNav";
+import { useAppSelector } from "@/hooks/hooks";
+import { useNavigate, useParams } from "react-router-dom";
 
 const IndividualChatPage = () => {
   const lastEleRef = useRef<HTMLDivElement | null>(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const isLastEleVisible = useInView(lastEleRef);
 
@@ -18,15 +22,17 @@ const IndividualChatPage = () => {
 
   const [isFirstDataFetching, setIsFirstDataFetching] = useState(false);
 
+  const userId = useAppSelector((state) => state.auth.user?._id);
+
   useEffect(() => {
     lastEleRef.current?.scrollIntoView();
   }, [isFirstDataFetching]);
 
-  // useEffect(() => {
-  //   if (isLastEleVisible) {
-  //     lastEleRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (userId === id) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <motion.div
