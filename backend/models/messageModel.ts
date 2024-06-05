@@ -1,12 +1,15 @@
-import { model, Types, Schema, Document } from "mongoose";
+import { model, Types, Schema, Document, trusted } from "mongoose";
+import { FileType } from "../types";
 
 interface IMessage extends Document {
   senderId: Types.ObjectId;
   receiverId: Types.ObjectId[];
-  content: string;
+  content: string | null;
+  file: FileType | null;
   status: "sent" | "read" | string;
   reactions: Map<string, Types.ObjectId[]>;
-  type: string;
+  type: string | null;
+  mimeType: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,7 +18,28 @@ const messageSchema = new Schema(
   {
     senderId: { type: Types.ObjectId, ref: "User", required: true },
     receiverId: [{ type: Types.ObjectId, ref: "User", required: true }],
-    content: { type: String, required: true },
+    content: { type: String, required: false, default: null },
+    file: {
+      type: new Schema({
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+        size: {
+          type: Number,
+          required: true,
+        },
+      }),
+      default: null,
+    },
     status: { type: String, required: true, default: "sent" },
     reactions: {
       type: Map,
@@ -23,7 +47,8 @@ const messageSchema = new Schema(
       unique: true,
       default: {},
     },
-    type: String,
+    type: { type: String, default: null, required: false },
+    mimeType: { type: String, default: null, required: false },
   },
   { timestamps: true }
 );

@@ -9,12 +9,14 @@ import {
   getReactions,
 } from "../controllers/messagesController";
 import { authOnly } from "../middlewares/authMiddleware";
+import upload from "../config/multer";
+import createUploadMiddleware from "../middlewares/multerMiddleware";
 
 const router = Router();
 
 router
   .route("/messages/:receiverId")
-  .post(authOnly, sendMessage)
+  .post(authOnly, createUploadMiddleware("file"), sendMessage)
   // @route GET /api/v1/messages/
   // @desc get paginated messages for a chat
   // request query params - ?page=

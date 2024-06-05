@@ -58,6 +58,7 @@ const Messages = ({
       queryKey: ["messages", id],
       queryFn: ({ pageParam }) => getMessages({ pageParam, id }),
       getNextPageParam: (previousPage) => previousPage.nextPage,
+      refetchOnWindowFocus: false,
 
       onError: (err: any) => {
         console.log(err);
@@ -269,6 +270,8 @@ const Messages = ({
                   sentTime={message.createdAt}
                   status={message.status}
                   initialReactions={message.reactions}
+                  file={message.file}
+                  mimeType={message.mimeType}
                 />
               </div>
             );

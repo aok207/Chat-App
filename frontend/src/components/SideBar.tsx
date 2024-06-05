@@ -160,14 +160,16 @@ const SideBar = ({ user, users, navigate }: SideBarProps) => {
             )}
           </div>
           {menus.map((ele, index) => (
-            <Link to={ele.link} className="w-full" key={index}>
-              <Button
-                className={cn("w-full flex gap-2 justify-start")}
-                variant={"ghost"}
-              >
-                {ele.icon} {ele.text}
-              </Button>
-            </Link>
+            <SheetClose asChild>
+              <Link to={ele.link} className="w-full" key={index}>
+                <Button
+                  className={cn("w-full flex gap-2 justify-start")}
+                  variant={"ghost"}
+                >
+                  {ele.icon} {ele.text}
+                </Button>
+              </Link>
+            </SheetClose>
           ))}
 
           <div className="w-full flex justify-between hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 rounded-md">

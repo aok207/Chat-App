@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { searchUsersByName } from "@/api/users";
 import { cn, showToast } from "@/lib/utils";
 import Search from "./Search";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import Chat from "./Chat";
 import { getChatsForUser } from "@/api/messages";
@@ -13,7 +13,7 @@ import { ChatResponseType } from "@/types/types";
 import { useEffect, useState } from "react";
 import { socket } from "@/sockets/sockets";
 
-const ChatsList = () => {
+const ConversationList = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const searchQuery = useAppSelector((state) => state.ui.searchQuery);
   const currentPage = useAppSelector((state) => state.ui.currentPage);
@@ -87,41 +87,41 @@ const ChatsList = () => {
     <div className="flex flex-col gap-4 px-3 overflow-auto h-full">
       <Tabs className={cn("w-full h-full flex flex-col")} defaultValue="chats">
         <div className="w-full flex gap-2 items-center h-fit">
-          <LayoutGroup>
-            <div className="flex-grow">
-              <Navbar user={currentUser} searchUsersQuery={searchUsersQuery} />
-            </div>
-            <AnimatePresence mode="popLayout">
-              {currentPage !== "search" && (
-                <motion.div
-                  className="flex flex-shrink-0"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  layout
-                >
-                  <TabsList className={cn("flex")}>
-                    <TabsTrigger
-                      value="chats"
-                      className={cn(
-                        "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
-                      )}
-                    >
-                      Chats
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="groups"
-                      className={cn(
-                        "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
-                      )}
-                    >
-                      Groups
-                    </TabsTrigger>
-                  </TabsList>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </LayoutGroup>
+          {/* <LayoutGroup> */}
+          <div className="flex-grow">
+            <Navbar user={currentUser} searchUsersQuery={searchUsersQuery} />
+          </div>
+          <AnimatePresence mode="popLayout">
+            {currentPage !== "search" && (
+              <motion.div
+                className="flex flex-shrink-0"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                layout
+              >
+                <TabsList className={cn("flex")}>
+                  <TabsTrigger
+                    value="chats"
+                    className={cn(
+                      "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
+                    )}
+                  >
+                    Chats
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="groups"
+                    className={cn(
+                      "dark:data-[state=active]:bg-purple-700 data-[state=active]:bg-purple-700 data-[state=active]:text-slate-50"
+                    )}
+                  >
+                    Groups
+                  </TabsTrigger>
+                </TabsList>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* </LayoutGroup> */}
         </div>
         {currentPage !== "search" ? (
           <>
@@ -148,6 +148,7 @@ const ChatsList = () => {
                         {chats &&
                           chats.map((chat) => (
                             <Chat
+                              key={chat.otherUser._id}
                               chatId={chat.otherUser._id}
                               latestMessage={chat.latestMessage}
                               isOnline={chat.otherUser.isOnline}
@@ -156,7 +157,7 @@ const ChatsList = () => {
                               name={chat.otherUser.name}
                               latestMessageStatus={chat.latestMessageStatus}
                               latestMessageSenderId={chat.latestMessageSenderId}
-                              key={chat.otherUser._id}
+                              latestMessageType={chat.latestMessageType}
                             />
                           ))}
                       </>
@@ -185,4 +186,4 @@ const ChatsList = () => {
   );
 };
 
-export default ChatsList;
+export default ConversationList;

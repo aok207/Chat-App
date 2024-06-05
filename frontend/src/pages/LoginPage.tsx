@@ -31,7 +31,7 @@ const LoginPage = () => {
       />
       <motion.div
         exit={target !== "register" ? { opacity: 0 } : {}}
-        className="w-full h-full col-span-1 lg:pt-8"
+        className="w-full h-full col-span-1"
       >
         <Card className="w-full h-full col-span-1 pt-4 overflow-x-hidden">
           <motion.div

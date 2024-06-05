@@ -13,12 +13,19 @@ export function getChatsForUser(): Promise<{
   return api.get("/messages").then((res) => res.data);
 }
 
-export function sendMessage(data: {
+export function sendMessage({
+  receiverId,
+  data,
+}: {
   receiverId: string;
-  content: string;
+  data: FormData;
 }): Promise<{ data: MessageType }> {
   return api
-    .post(`/messages/${data.receiverId}`, { message: data.content })
+    .post(`/messages/${receiverId}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
     .then((res) => res.data);
 }
 

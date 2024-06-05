@@ -16,7 +16,7 @@ const SearchBar = () => {
         <Input
           type="text"
           placeholder="Search for users..."
-          className="px-6 peer h-fit"
+          className="px-7 peer h-fit"
           value={searchQuery}
           onFocus={() => {
             setIsSearchFocused(true);
@@ -31,7 +31,7 @@ const SearchBar = () => {
             dispatch(setSearchQuery(e.target.value));
           }}
         />
-        <SearchIcon className="w-4 h-4 peer-focus:dark:text-white peer-focus:text-black text-gray-400 absolute inset-0 top-1/2 transform -translate-y-1/2 left-1" />
+        <SearchIcon className="w-4 h-4 peer-focus:dark:text-white peer-focus:text-black text-gray-400 absolute inset-0 top-1/2 transform -translate-y-1/2 left-2" />
         <AnimatePresence>
           {isSearchFocused && (
             <motion.button

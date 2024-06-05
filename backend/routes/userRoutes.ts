@@ -8,10 +8,8 @@ import {
   deleteUser,
 } from "../controllers/usersController";
 import checkFormData from "../middlewares/checkFormDataMiddleware";
-import multer from "multer";
-
-// multer for file upload
-const upload = multer({ storage: multer.memoryStorage() });
+import upload from "../config/multer";
+import createUploadMiddleware from "../middlewares/multerMiddleware";
 
 const router = Router();
 
@@ -19,12 +17,12 @@ router.get("/profile", authOnly, getUserProfile);
 router.put(
   "/profile/update",
   authOnly,
-  upload.single("profilePicture"),
+  createUploadMiddleware("profilePicture"),
   updateUserProfile
 );
 router.patch(
   "/password/update",
-  upload.none(),
+  createUploadMiddleware(undefined, 0),
   authOnly,
   checkFormData,
   updatePassword

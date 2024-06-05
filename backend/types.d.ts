@@ -17,6 +17,7 @@ export type ChatResponseType = {
   latestMessageStatus: string | null;
   latestMessageSenderId: mongoose.Types.ObjectId;
   otherUser: IUser;
+  latestMessageType: string | null;
 };
 
 declare module "express-serve-static-core" {
@@ -33,3 +34,10 @@ export type JwtPayload = {
 interface AuthenticatedSocket extends Socket {
   user?: IUser | null;
 }
+
+export type FileType = {
+  public_id: string;
+  url: string;
+  name: string;
+  size: number;
+};

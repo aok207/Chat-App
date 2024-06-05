@@ -5,6 +5,8 @@ import ResetToken from "../models/resetTokenModel";
 import { AuthenticatedSocket, IUser, JwtPayload } from "../types";
 import User from "../models/userModel";
 import Friend from "../models/friendModel";
+import cloudinary from "../config/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 export function createToken(info: { id?: mongoose.ObjectId; email?: string }) {
   const jwtSecret = process.env.JWT_ACCESS_SECRET as string;
@@ -83,4 +85,23 @@ export function emitEvent(
   if (targetSocket) {
     targetSocket.emit(event, userId, ...data);
   }
+}
+
+// file is a base64 string
+export async function uploadFile(
+  file: string,
+  resourceType?: "image" | "video" | "raw" | "auto"
+): Promise<UploadApiResponse> {
+  if (!resourceType) {
+    resourceType = "image";
+  }
+
+  const uploadResult = await cloudinary.uploader.upload(file, {
+    folder: "Chat_app",
+    use_filename: true,
+    unique_filename: true,
+    resource_type: resourceType,
+  });
+
+  return uploadResult;
 }

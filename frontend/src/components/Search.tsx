@@ -94,6 +94,8 @@ const Search = ({
                           avatar={user.avatar}
                           name={user.name}
                           isOnline={user.isOnline}
+                          latestMessageSenderId={null}
+                          latestMessageStatus={null}
                         />
                       ) : (
                         <Chat
@@ -107,6 +109,16 @@ const Search = ({
                             chats?.filter(
                               (chat) => chat.otherUser._id === user._id
                             )[0].latestTime
+                          }
+                          latestMessageSenderId={
+                            chats?.filter(
+                              (chat) => chat.otherUser._id === user._id
+                            )[0].latestMessageSenderId as string
+                          }
+                          latestMessageStatus={
+                            chats?.filter(
+                              (chat) => chat.otherUser._id === user._id
+                            )[0].latestMessageStatus as string
                           }
                           avatar={user.avatar}
                           name={user.name}

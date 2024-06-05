@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Avatar from "./Avatar";
 import { useAppSelector } from "@/hooks/hooks";
 import { CheckCheck } from "lucide-react";
@@ -13,6 +13,7 @@ type ChatProps = {
   latestTime: Date | null | undefined;
   latestMessageStatus: string | null;
   latestMessageSenderId: string | null;
+  latestMessageType: string;
 };
 
 const Chat = ({
@@ -24,8 +25,9 @@ const Chat = ({
   latestTime,
   latestMessageStatus,
   latestMessageSenderId,
+  latestMessageType,
 }: ChatProps) => {
-  const { id } = useParams();
+  const id = useLocation().pathname.split("/")[2];
   const userId = useAppSelector((state) => state.auth.user?._id);
 
   return (
@@ -53,18 +55,38 @@ const Chat = ({
             </span>
           </div>
           <div className="w-full text-left relative">
-            <p
-              className={`truncate w-[85%] text-sm  ${
-                latestMessageSenderId !== userId &&
-                latestMessageStatus !== "read"
-                  ? "dark:text-white text-black font-bold"
-                  : "font-normal dark:text-slate-300 text-slate-500"
-              } `}
-            >
-              {latestMessage}
-            </p>
+            {latestMessageType === "text" ? (
+              <p
+                className={`truncate w-[85%] text-sm  ${
+                  latestMessageSenderId !== userId &&
+                  latestMessageStatus !== "read"
+                    ? "dark:text-white text-black font-bold"
+                    : "font-normal dark:text-slate-300 text-slate-500"
+                } `}
+              >
+                {latestMessage}
+              </p>
+            ) : (
+              <p
+                className={`text-sm ${
+                  latestMessageSenderId !== userId &&
+                  latestMessageStatus !== "read"
+                    ? "dark:text-white text-black font-bold"
+                    : "font-normal dark:text-slate-300 text-slate-500"
+                } `}
+              >
+                {userId === latestMessageSenderId ? "You" : name} sent{" "}
+                {["a", "e", "i", "o", "u"].includes(
+                  latestMessageType.charAt(0).toLowerCase()
+                )
+                  ? "an"
+                  : "a"}{" "}
+                {latestMessageType}
+              </p>
+            )}
 
-            {latestMessageSenderId !== userId &&
+            {latestMessageSenderId !== null &&
+              latestMessageSenderId !== userId &&
               latestMessageStatus !== "read" && (
                 <div className="w-3 h-3 rounded-full absolute bottom-2 right-2 shadow-md bg-purple-500" />
               )}

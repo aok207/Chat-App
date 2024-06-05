@@ -12,6 +12,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import setupPassport from "./config/passport";
+import multerErrorMiddleware from "./middlewares/multerMiddleware";
 
 // Connect to db
 connectToDB();

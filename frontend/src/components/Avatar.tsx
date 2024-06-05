@@ -17,7 +17,7 @@ const Avatar = ({
   return (
     <div className="relative">
       <ShadcnAvatar>
-        <AvatarImage src={image} alt={`profile of ${name}`} />
+        <AvatarImage src={`${image}`} alt={`profile of ${name}`} />
         <AvatarFallback>{makeFallbackAvatar(name)}</AvatarFallback>
       </ShadcnAvatar>
       {isOnline && (

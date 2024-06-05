@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 import User from "../models/userModel";
 import Message from "../models/messageModel";
 import { ChatResponseType, IUser } from "../types";
-import { getFriends } from "../utils/utils";
+import { getFriends, uploadFile } from "../utils/utils";
+import cloudinary from "../config/cloudinary";
+import upload from "../config/multer";
 
 export async function getMessages(req: Request, res: Response) {
   const userId = req.user?._id;
@@ -120,9 +122,14 @@ export async function sendMessage(req: Request, res: Response) {
     const { receiverId } = req.params;
     const userId = req.user?._id;
     const { message } = req.body;
+    const file = req.file;
 
-    if (!receiverId || !userId || !message) {
+    if (!receiverId || !userId) {
       return res.status(400).json({ error: "Invalid message!" });
+    }
+
+    if (!message && !file) {
+      return res.status(400).json({ error: "Message content is needed." });
     }
 
     // You can't message yourself
@@ -136,13 +143,45 @@ export async function sendMessage(req: Request, res: Response) {
       return res.status(404).json({ error: "Receiver does not exist!" });
     }
 
+    const fileType = file?.mimetype.split("/")[0];
+    if (fileType === "video") {
+      return res
+        .status(400)
+        .json({ error: "Video files are currently not supported!" });
+    }
+
+    let uploadResult;
+
+    // save the file to cloudinary
+    if (file) {
+      const b64 = Buffer.from(file.buffer).toString("base64");
+      const dataURI = "data:" + file.mimetype + ";base64," + b64;
+      if (fileType === "image") {
+        uploadResult = await uploadFile(dataURI);
+      } else if (fileType === "audio") {
+        uploadResult = await uploadFile(dataURI, "video");
+      } else {
+        uploadResult = await uploadFile(dataURI, "raw");
+      }
+    }
+
     // save the message in db
     const newMessage = new Message({
       senderId: userId,
       receiverId: [receiverId],
-      content: message,
+      content: message ? message : null,
+      // save the file info if exists
+      file: uploadResult
+        ? {
+            public_id: uploadResult.public_id,
+            name: file?.originalname,
+            size: uploadResult.bytes,
+            url: uploadResult.secure_url,
+          }
+        : null,
       status: "sent",
-      type: "text",
+      type: uploadResult ? uploadResult.resource_type : "text",
+      mimeType: uploadResult ? file?.mimetype : null,
     });
 
     await newMessage.save();
@@ -334,8 +373,6 @@ export async function getReactions(req: Request, res: Response) {
       }
     }
 
-    console.log(reactions);
-
     res.status(200).json({ data: reactions });
   } catch (err) {
     console.log(err);
@@ -381,10 +418,12 @@ export async function getChats(req: Request, res: Response) {
 
       chats.push({
         latestMessage: latestMessage[0].content,
+
         latestTime: latestMessage[0].createdAt,
         otherUser: friend as IUser,
         latestMessageStatus: latestMessage[0].status,
         latestMessageSenderId: latestMessage[0].senderId,
+        latestMessageType: latestMessage[0].type,
       });
     }
 

@@ -55,11 +55,11 @@ export const showToast: showToastFn = (type, message) => {
 };
 
 export const makeFallbackAvatar = (name: string): string => {
-  const splitted = name.split(" ");
-  if (splitted.length > 1) {
+  const splitted = name?.split(" ");
+  if (splitted && splitted.length > 1) {
     return `${splitted[0][0] + splitted[1][0]}`;
   } else {
-    return name.slice(0, 2);
+    return name?.slice(0, 2);
   }
 };
 
@@ -142,4 +142,16 @@ export const formatActiveTime = (targetTime: Date) => {
 
   const yearspast = Math.floor(secondsPast / 31557600);
   return `${yearspast} year${yearspast === 1 ? "" : "s"} ago`;
+};
+
+export const debounce = (func: (...args: unknown[]) => void, delay: number) => {
+  let timeout: NodeJS.Timeout | null = null;
+
+  return (...args: unknown[]) => {
+    if (timeout) clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
 };

@@ -16,63 +16,76 @@ import IndividualChatPage from "./pages/IndividualChatPage";
 
 const App = () => {
   const location = useLocation();
+  const locationArr = location.pathname?.split("/") ?? [];
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-white dark:bg-dark text-black dark:text-white">
       <div className="w-full h-full overflow-auto">
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Layout />}>
-              <Route element={<HomePage />} index />
-              <Route element={<SettingsPage />} path="/settings" />
-              <Route element={<IndividualChatPage />} path="/chat/:id" />
-            </Route>
+          <Routes>
             <Route
+              path="/*"
+              element={
+                <Layout>
+                  <AnimatePresence>
+                    <Routes location={location} key={locationArr[2]}>
+                      <Route element={<HomePage />} index />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route
+                        path="/chat/:id"
+                        element={<IndividualChatPage />}
+                      />
+                      <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                  </AnimatePresence>
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/login"
               element={
                 <ProtectedRoutes type="guest">
                   <LoginPage />
                 </ProtectedRoutes>
               }
-              path="/login"
             />
             <Route
+              path="/signup"
               element={
                 <ProtectedRoutes type="guest">
                   <SignUpPage />
                 </ProtectedRoutes>
               }
-              path="/signup"
             />
             <Route
+              path="/pick-username"
               element={
                 <ProtectedRoutes type="guest">
                   <PickNamePage />
                 </ProtectedRoutes>
               }
-              path="/pick-username"
             />
             <Route
+              path="/forgot-password"
               element={
                 <ProtectedRoutes type="guest">
                   <ForgotPasswordPage />
                 </ProtectedRoutes>
               }
-              path="/forgot-password"
             />
             <Route
+              path="/reset-password/:token"
               element={
                 <ProtectedRoutes type="guest">
                   <ResetPasswordPage />
                 </ProtectedRoutes>
               }
-              path="/reset-password/:token"
             />
-
-            <Route element={<NotFoundPage />} path="*" />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
         <ToastContainer
-          stacked
           position="bottom-right"
           autoClose={5000}
           hideProgressBar={false}

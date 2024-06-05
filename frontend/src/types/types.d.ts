@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    cloudinary: unknown;
+  }
+}
+
 export type UserType = {
   _id: string;
   name: string;
@@ -13,18 +19,21 @@ export type ChatResponseType = {
   latestMessageStatus: string | null;
   latestMessageSenderId: string;
   otherUser: UserType;
+  latestMessageType: string;
 };
 
 export type MessageType = {
   _id: string;
   senderId: string;
   receiverId: string[];
-  content: string;
+  content: string | null;
+  file: FileType | null;
   status: string;
   reactions: {
     [emojiId: string]: string[];
   };
-  type: string;
+  type: string | null;
+  mimeType: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -65,3 +74,9 @@ export interface IUpdatePasswordInputs {
 export interface IDeleteAccountInput {
   password: string;
 }
+
+export type FileType = {
+  url: string;
+  name: string;
+  size: number;
+};

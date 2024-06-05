@@ -14,20 +14,23 @@ import { Dialog, DialogTrigger } from "./ui/dialog";
 import ReactionsList from "./ReactionsList";
 import { socket } from "@/sockets/sockets";
 import { useParams } from "react-router-dom";
+import { FileType } from "@/types/types";
 
 type MessageProps = {
   id: string;
   senderId: string;
-  message: string;
+  message: string | null;
   avatar: string | null | undefined;
   sentTime: Date;
   status?: "sent" | "sending" | "read" | "error" | string;
   previousSenderId: string | null;
   name: string;
-  type: string;
+  type: string | null;
   initialReactions: {
     [emojiId: string]: string[];
   };
+  file: FileType | null;
+  mimeType: string | null;
 };
 
 const Message = ({
@@ -41,6 +44,8 @@ const Message = ({
   name,
   type,
   initialReactions,
+  file,
+  mimeType,
 }: MessageProps) => {
   const userId = useAppSelector((state) => state.auth.user?._id) as string;
   const [isReactionsVisible, setIsReactionsVisible] = useState(false);
@@ -215,7 +220,7 @@ const Message = ({
   }, []);
 
   return (
-    <div
+    <article
       className={`w-full h-fit flex group relative ${
         userId === senderId ? "justify-end" : "justify-start"
       }`}
@@ -233,25 +238,56 @@ const Message = ({
             userId === senderId ? "flex-row-reverse" : "flex-row"
           }`}
         >
-          <Avatar name={name} image={`${avatar}`} isOnline={false} />
+          <div className="h-full w-fit">
+            <Avatar name={name} image={`${avatar}`} isOnline={false} />
+          </div>
           <div
-            className={`px-2 py-1 relative ${
-              status !== "error" ? "bg-gray-200 dark:bg-gray-700" : "bg-red-600"
-            } flex flex-col h-fit items-end ${
+            className={`h-fit ${
+              type?.split("/")[0] === "text"
+                ? "px-2 py-1"
+                : "object-cover overflow-hidden"
+            } relative ${
+              status !== "error"
+                ? type === "text"
+                  ? "bg-gray-200 dark:bg-gray-700"
+                  : "bg-transparent"
+                : "bg-red-600"
+            } flex flex-col gap-1.5 h-fit items-end ${
               senderId === previousSenderId
                 ? "rounded-lg"
                 : senderId === userId
-                ? "rounded-xl rounded-tr-none"
+                ? "rounded-xl rounded-tr-none pb-2"
                 : "rounded-xl rounded-tl-none"
-            }`}
+            } ${mimeType?.split("/")[0] === "audio" ? "w-full" : ""}`}
           >
-            {type === "text" && (
+            {type === "text" ? (
               <pre className="text-[1rem] font-normal font-sans text-gray-900 dark:text-white text-left">
                 {message}
               </pre>
+            ) : type === "image" ? (
+              <img
+                src={file?.url}
+                alt={file?.name}
+                className="object-cover"
+                loading="lazy"
+              />
+            ) : type === "video" ? (
+              <div className="w-full h-fit">
+                <audio controls style={{ width: "100%" }}>
+                  <source src={`${file?.url}`} type={mimeType as string} />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            ) : (
+              <></>
             )}
+
             {/* Status */}
-            <div className="w-fit h-full flex-shrink-0">
+            <div
+              className={`w-fit h-full flex-shrink-0 ${
+                type?.split("/")[0] === "text" ? "" : "mr-2"
+              }`}
+            >
               {senderId === userId && status === "read" && (
                 <CheckCheck className="text-purple-500 w-3.5 h-3.5 flex-shrink-0" />
               )}
@@ -265,7 +301,7 @@ const Message = ({
               )}
               {senderId === userId && status === "error" && (
                 <span className="text-xs font-semibold flex gap-1">
-                  <CircleX className="w-4 h-4 text-red-600" /> Couldn't sent
+                  <CircleX className="w-4 h-4 text-white" /> Couldn't sent
                 </span>
               )}
             </div>
@@ -345,7 +381,7 @@ const Message = ({
           )}
         </span>
       </div>
-    </div>
+    </article>
   );
 };
 
