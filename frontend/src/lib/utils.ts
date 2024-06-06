@@ -143,15 +143,3 @@ export const formatActiveTime = (targetTime: Date) => {
   const yearspast = Math.floor(secondsPast / 31557600);
   return `${yearspast} year${yearspast === 1 ? "" : "s"} ago`;
 };
-
-export const debounce = (func: (...args: unknown[]) => void, delay: number) => {
-  let timeout: NodeJS.Timeout | null = null;
-
-  return (...args: unknown[]) => {
-    if (timeout) clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
-};

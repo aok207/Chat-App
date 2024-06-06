@@ -121,7 +121,8 @@ export async function sendMessage(req: Request, res: Response) {
   try {
     const { receiverId } = req.params;
     const userId = req.user?._id;
-    const { message } = req.body;
+    const { message, replyingTo }: { message: string; replyingTo: string } =
+      req.body;
     const file = req.file;
 
     if (!receiverId || !userId) {
@@ -141,6 +142,16 @@ export async function sendMessage(req: Request, res: Response) {
     const receiver = await User.findById(receiverId);
     if (!receiver) {
       return res.status(404).json({ error: "Receiver does not exist!" });
+    }
+
+    // if this is a reply, check if replying to message exists
+    if (replyingTo) {
+      const replyingMessage = await Message.findById(replyingTo);
+      if (!replyingMessage) {
+        return res
+          .status(400)
+          .json({ error: "You are replying to a message that doesn't exist!" });
+      }
     }
 
     const fileType = file?.mimetype.split("/")[0];
@@ -169,6 +180,7 @@ export async function sendMessage(req: Request, res: Response) {
     const newMessage = new Message({
       senderId: userId,
       receiverId: [receiverId],
+      replyingTo: replyingTo ? new mongoose.Types.ObjectId(replyingTo) : null,
       content: message ? message : null,
       // save the file info if exists
       file: uploadResult

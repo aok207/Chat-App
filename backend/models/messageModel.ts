@@ -4,12 +4,14 @@ import { FileType } from "../types";
 interface IMessage extends Document {
   senderId: Types.ObjectId;
   receiverId: Types.ObjectId[];
+  replyingTo: Types.ObjectId[] | null;
   content: string | null;
   file: FileType | null;
   status: "sent" | "read" | string;
   reactions: Map<string, Types.ObjectId[]>;
   type: string | null;
   mimeType: string | null;
+  edited: boolean | undefined | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,6 +20,12 @@ const messageSchema = new Schema(
   {
     senderId: { type: Types.ObjectId, ref: "User", required: true },
     receiverId: [{ type: Types.ObjectId, ref: "User", required: true }],
+    replyingTo: {
+      type: Types.ObjectId,
+      ref: "Message",
+      required: false,
+      default: null,
+    },
     content: { type: String, required: false, default: null },
     file: {
       type: new Schema({
@@ -49,6 +57,7 @@ const messageSchema = new Schema(
     },
     type: { type: String, default: null, required: false },
     mimeType: { type: String, default: null, required: false },
+    edited: { type: Boolean, default: false, required: false },
   },
   { timestamps: true }
 );

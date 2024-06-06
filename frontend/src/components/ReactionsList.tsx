@@ -28,6 +28,7 @@ const Reaction = ({ user, emoji }: { user: UserType; emoji: string }) => {
           latestMessageSenderId={null}
           latestMessageStatus={null}
           latestTime={null}
+          latestMessageType={null}
         />
         <div className="absolute top-1/3 right-3 flex items-center justify-center">
           <Emoji unified={emoji} size={23} emojiStyle={EmojiStyle.FACEBOOK} />
@@ -66,6 +67,7 @@ const ReactionsList = ({ id }: { id: string }) => {
               {Object.keys(data!.data).map((emoji) => {
                 return (
                   <TabsTrigger
+                    key={emoji}
                     value={emoji}
                     className="flex items-center gap-1 flex-grow"
                   >

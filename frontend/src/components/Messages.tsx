@@ -26,6 +26,9 @@ type MessagesProps = {
   isLastEleVisible: boolean;
   isFirstDataFetching: boolean;
   isGroupChat: boolean;
+  messageInputTextarea: HTMLTextAreaElement | null;
+  setReplyingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
+  replyingMessage: MessageType | null;
 };
 
 const Messages = ({
@@ -39,6 +42,9 @@ const Messages = ({
   lastEleRef,
   isLastEleVisible,
   isGroupChat,
+  messageInputTextarea,
+  setReplyingMessage,
+  replyingMessage,
 }: MessagesProps) => {
   const currentUser = useAppSelector((state) => state.auth.user);
 
@@ -209,7 +215,10 @@ const Messages = ({
   };
 
   return (
-    <ScrollArea className="w-full h-full flex flex-col" onScroll={handleScroll}>
+    <ScrollArea
+      className="w-full h-full flex flex-col z-10"
+      onScroll={handleScroll}
+    >
       <div className="p-2 py-8 pt-10 px-4 flex flex-col gap-4 w-full h-full items-center relative">
         {(isLoading || isFetchingNextPage) && (
           <Spinner width={10} height={10} />
@@ -232,7 +241,7 @@ const Messages = ({
 
             return (
               <div
-                className="w-full text-center"
+                className={"w-full text-center z-10"}
                 key={`${index}-${message._id}`}
               >
                 {index === 0 ? (
@@ -250,9 +259,22 @@ const Messages = ({
                   )
                 )}
                 <Message
-                  id={message._id}
-                  message={message.content}
-                  type={message.type}
+                  message={message}
+                  repliedMessage={
+                    message.replyingTo
+                      ? messages.find((m) => m._id === message.replyingTo)
+                      : null
+                  }
+                  repliedMessageSender={
+                    message.replyingTo
+                      ? participants.find(
+                          (p) =>
+                            p._id ===
+                            messages.find((m) => m._id === message.replyingTo)!
+                              .senderId
+                        )
+                      : null
+                  }
                   avatar={
                     message.senderId === currentUser?._id
                       ? (currentUser?.avatar as string)
@@ -263,15 +285,12 @@ const Messages = ({
                       ? (currentUser?.name as string)
                       : (user?.name as string)
                   }
-                  senderId={message.senderId}
                   previousSenderId={
                     index === 0 ? null : messages[index - 1].senderId
                   }
-                  sentTime={message.createdAt}
-                  status={message.status}
-                  initialReactions={message.reactions}
-                  file={message.file}
-                  mimeType={message.mimeType}
+                  messageInputTextarea={messageInputTextarea}
+                  replyingMessage={replyingMessage}
+                  setReplyingMessage={setReplyingMessage}
                 />
               </div>
             );
@@ -285,7 +304,7 @@ const Messages = ({
 
               return (
                 <motion.div
-                  className="w-full"
+                  className="w-full z-10"
                   initial={{ opacity: 0, y: 100 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
@@ -315,7 +334,7 @@ const Messages = ({
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 16, opacity: 0 }}
-              className="fixed right-10 bottom-20 p-2 rounded-full dark:bg-slate-800 dark:text-white bg-zinc-500 text-white"
+              className="fixed z-50 right-10 bottom-20 p-2 rounded-full dark:bg-slate-800 dark:text-white bg-zinc-500 text-white"
             >
               <ArrowDown className="w-5 h-5" />
             </motion.button>

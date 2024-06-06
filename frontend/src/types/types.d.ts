@@ -26,6 +26,7 @@ export type MessageType = {
   _id: string;
   senderId: string;
   receiverId: string[];
+  replyingTo: string | null;
   content: string | null;
   file: FileType | null;
   status: string;
@@ -34,6 +35,7 @@ export type MessageType = {
   };
   type: string | null;
   mimeType: string | null;
+  edited: boolean | null;
   createdAt: Date;
   updatedAt: Date;
 };
