@@ -29,6 +29,20 @@ export function sendMessage({
     .then((res) => res.data);
 }
 
+export function updateMessage({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}): Promise<{ data: MessageType }> {
+  return api.patch(`/message/${id}`, { content }).then((res) => res.data);
+}
+
+export function deleteMessage(id: string) {
+  return api.delete(`/message/${id}`).then((res) => res.data);
+}
+
 export function getMessages({
   pageParam = 1,
   id,

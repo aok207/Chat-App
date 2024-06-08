@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { sendMessage } from "@/api/messages";
+import { sendMessage, updateMessage } from "@/api/messages";
 import { useAppSelector } from "@/hooks/hooks";
 import { showToast } from "@/lib/utils";
 import { socket } from "@/sockets/sockets";
 import { MessageType } from "@/types/types";
-import { Paperclip, Send, Smile } from "lucide-react";
+import { Check, Paperclip, Send, Smile } from "lucide-react";
 import React, { ChangeEvent, forwardRef, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
@@ -16,11 +17,20 @@ type MessageInputProps = {
   lastEle: HTMLDivElement | null;
   messageReplyingTo: MessageType | null;
   setReplyingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
+  editingMessage: MessageType | null;
+  setEditingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
 };
 
 const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
   (
-    { setMessages, lastEle, messageReplyingTo, setReplyingMessage },
+    {
+      setMessages,
+      lastEle,
+      messageReplyingTo,
+      setReplyingMessage,
+      editingMessage,
+      setEditingMessage,
+    },
     messageInputRef
   ) => {
     const { id } = useParams();
@@ -44,19 +54,42 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
     const { mutate, isLoading } = useMutation({
       mutationFn: sendMessage,
       onSuccess: (data) => {
-        socket.emit("send message", id);
+        socket.emit("changed messages", id);
         const message = data.data;
         lastEle?.scrollIntoView({ behavior: "smooth" });
         setMessages((prev) => [...prev.slice(0, prev.length - 1), message]);
         queryClient.invalidateQueries(["chats"]);
-        setReplyingMessage(null);
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (err: any) => {
         setMessages((prev) => [
           ...prev.slice(0, prev.length - 1),
           { ...prev[prev.length - 1], status: "error" },
         ]);
+        console.log(err);
+        showToast("error", err.response.data.error || err.message);
+      },
+    });
+
+    const editMessageMutation = useMutation({
+      mutationFn: updateMessage,
+
+      onSuccess: (data) => {
+        const message = data.data;
+        socket.emit("changed messages", id);
+        setMessages((prv) =>
+          prv.map((m) => {
+            if (m._id === message._id) {
+              return message;
+            } else {
+              return m;
+            }
+          })
+        );
+
+        queryClient.invalidateQueries(["chats"]);
+      },
+
+      onError: (err: any) => {
         console.log(err);
         showToast("error", err.response.data.error || err.message);
       },
@@ -77,44 +110,61 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
     const handleSendMessage = () => {
       setIsEmojiPickerVisible(false);
 
-      if (!getTextareaValue()?.value) {
+      if (
+        !getTextareaValue()?.value ||
+        isLoading ||
+        editMessageMutation.isLoading
+      ) {
         return;
       }
 
       socket.emit("stopped typing to", id);
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          _id: uuidv4(),
-          content: getTextareaValue()?.value,
-          status: "sending",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          receiverId: [id as string],
-          edited: false,
-          replyingTo: messageReplyingTo?._id,
-          senderId: userId,
-          type: "text",
-          reactions: {},
-          file: null,
-        } as MessageType,
-      ]);
+      if (editingMessage === null) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            _id: uuidv4(),
+            content: getTextareaValue()?.value,
+            status: "sending",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            receiverId: [id as string],
+            edited: false,
+            replyingTo: messageReplyingTo?._id,
+            senderId: userId,
+            type: "text",
+            reactions: {},
+            file: null,
+          } as MessageType,
+        ]);
 
-      const formData = new FormData();
-      formData.append("message", getTextareaValue()!.value);
+        const formData = new FormData();
 
-      if (messageReplyingTo) {
-        formData.append("replyingTo", messageReplyingTo._id);
+        formData.append("message", getTextareaValue()!.value);
+
+        if (messageReplyingTo) {
+          formData.append("replyingTo", messageReplyingTo._id);
+        }
+
+        mutate({ receiverId: id as string, data: formData });
+      } else {
+        editMessageMutation.mutate({
+          id: editingMessage._id,
+          content: getTextareaValue()!.value,
+        });
       }
-
-      mutate({ receiverId: id as string, data: formData });
 
       getTextareaValue()!.value = "";
 
       adjustTextareaHeight();
 
       lastEle?.scrollIntoView({ behavior: "smooth" });
+
+      // cleanups
+      setReplyingMessage(null);
+      setEditingMessage(null);
+      getTextareaValue()!.placeholder = "Write a message...";
     };
 
     const handleInput = () => {
@@ -165,6 +215,9 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
       mutate({ receiverId: id as string, data: formData });
 
       e.target.value = "";
+
+      setReplyingMessage(null);
+      getTextareaValue()!.placeholder = "Write a message...";
     };
 
     return (
@@ -212,9 +265,9 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
           <button
             className="flex-shrink-0"
             onClick={handleSendMessage}
-            disabled={isLoading}
+            disabled={isLoading || editMessageMutation.isLoading}
           >
-            <Send />
+            {editingMessage ? <Check /> : <Send />}
           </button>
 
           {/* Emoji picker */}

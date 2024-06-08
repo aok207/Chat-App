@@ -12,6 +12,8 @@ import Spinner from "./ui/spinner";
 import { ChatResponseType } from "@/types/types";
 import { useEffect, useState } from "react";
 import { socket } from "@/sockets/sockets";
+import { Plus } from "lucide-react";
+import ToolTip from "./ToolTip";
 
 const ConversationList = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -84,7 +86,7 @@ const ConversationList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 px-3 overflow-auto h-full">
+    <div className="flex flex-col gap-4 px-3 overflow-auto h-full relative">
       <Tabs className={cn("w-full h-full flex flex-col")} defaultValue="chats">
         <div className="w-full flex gap-2 items-center h-fit">
           {/* <LayoutGroup> */}
@@ -182,6 +184,22 @@ const ConversationList = () => {
           </AnimatePresence>
         )}
       </Tabs>
+      <motion.div
+        className="absolute rounded-full p-3 bg-gray-400 text-gray-200 dark:bg-gray-700 right-8 bottom-4 flex items-center justify-center w-fit h-fit"
+        whileHover={{
+          y: -5,
+          transition: {
+            type: "spring",
+            duration: 0.3,
+          },
+        }}
+      >
+        <ToolTip text="New group">
+          <button className="">
+            <Plus />
+          </button>
+        </ToolTip>
+      </motion.div>
     </div>
   );
 };

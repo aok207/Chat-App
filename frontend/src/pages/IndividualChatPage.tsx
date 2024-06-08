@@ -8,7 +8,7 @@ import Messages from "@/components/Messages";
 import ChatNav from "@/components/ChatNav";
 import { useAppSelector } from "@/hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
-import ReplyingTo from "@/components/ReplyingTo";
+import DetailMode from "@/components/DetailMode";
 
 const IndividualChatPage = () => {
   const lastEleRef = useRef<HTMLDivElement | null>(null);
@@ -21,6 +21,10 @@ const IndividualChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [participants, setParticipants] = useState<UserType[]>([]);
   const [replyingMessage, setReplyingMessage] = useState<MessageType | null>(
+    null
+  );
+
+  const [editingMessage, setEditingMessage] = useState<MessageType | null>(
     null
   );
 
@@ -65,14 +69,17 @@ const IndividualChatPage = () => {
         messageInputTextarea={messageInputRef.current}
         replyingMessage={replyingMessage}
         setReplyingMessage={setReplyingMessage}
+        setEditingMessage={setEditingMessage}
       />
       <div className="w-full">
-        {replyingMessage && (
-          <ReplyingTo
+        {(replyingMessage || editingMessage) && (
+          <DetailMode
             participents={participants}
-            messageReplyingTo={replyingMessage}
+            messageReplyingTo={replyingMessage as MessageType}
             setReplyingMessage={setReplyingMessage}
             messageInputTextarea={messageInputRef.current}
+            editingMessage={editingMessage}
+            setEditingMessage={setEditingMessage}
           />
         )}
         <MessageInput
@@ -81,6 +88,8 @@ const IndividualChatPage = () => {
           lastEle={lastEleRef.current}
           messageReplyingTo={replyingMessage}
           setReplyingMessage={setReplyingMessage}
+          editingMessage={editingMessage}
+          setEditingMessage={setEditingMessage}
         />
       </div>
     </motion.div>

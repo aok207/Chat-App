@@ -8,23 +8,44 @@ type ReplyingToProps = {
   participents: UserType[];
   setReplyingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
   messageInputTextarea: HTMLTextAreaElement | null;
+  editingMessage: MessageType | null;
+  setEditingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
 };
 
-const ReplyingTo = ({
+const DetailMode = ({
   messageReplyingTo,
   participents,
   setReplyingMessage,
   messageInputTextarea,
+  editingMessage,
+  setEditingMessage,
 }: ReplyingToProps) => {
+  const user = useAppSelector((state) => state.auth.user);
+
   const replyingMessageSender = participents.find(
     (user) => user._id === messageReplyingTo?.senderId
   );
-  const user = useAppSelector((state) => state.auth.user);
 
-  const existReplyState = () => {
-    setReplyingMessage(null);
+  const exitState = () => {
+    if (editingMessage) {
+      setEditingMessage(null);
+    } else {
+      setReplyingMessage(null);
+    }
     messageInputTextarea!.placeholder = "Write a message...";
+    messageInputTextarea!.value = "";
   };
+
+  if (editingMessage) {
+    return (
+      <div className="w-full py-2 px-2 flex items-center justify-between bg-zinc-300 dark:bg-gray-700">
+        <span className="text-sm font-semibold">Edit Message</span>
+        <button onClick={exitState}>
+          <X />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full py-1.5 px-2 flex justify-between bg-zinc-300 dark:bg-gray-700">
@@ -48,11 +69,11 @@ const ReplyingTo = ({
           </i>
         </div>
       </div>
-      <button onClick={existReplyState}>
+      <button onClick={exitState}>
         <X />
       </button>
     </div>
   );
 };
 
-export default ReplyingTo;
+export default DetailMode;

@@ -84,9 +84,9 @@ io.on("connection", async (socket: AuthenticatedSocket) => {
     emitEvent(onlineUsers, targetId, "other user stopped typing", userId);
   });
 
-  // send message event
-  socket.on("send message", (targetId: string) => {
-    emitEvent(onlineUsers, targetId, "receive message", userId);
+  // changes in message event (send, edit, delete)
+  socket.on("changed messages", (targetId: string) => {
+    emitEvent(onlineUsers, targetId, "messages changed", userId);
   });
 
   // mark as read event

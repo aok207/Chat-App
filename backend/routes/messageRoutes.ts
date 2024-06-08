@@ -7,9 +7,10 @@ import {
   removeReaction,
   addReaction,
   getReactions,
+  editMessage,
+  deleteMessage,
 } from "../controllers/messagesController";
 import { authOnly } from "../middlewares/authMiddleware";
-import upload from "../config/multer";
 import createUploadMiddleware from "../middlewares/multerMiddleware";
 
 const router = Router();
@@ -24,6 +25,12 @@ router
 
 router.patch("/messages/:otherId/mark-as-read", authOnly, markAsRead);
 router.get("/messages", authOnly, getChats);
+
+// edit and delete message
+router
+  .route("/message/:id")
+  .patch(authOnly, editMessage)
+  .delete(authOnly, deleteMessage);
 
 // reactions
 router.patch("/messages/:messageId/add-reaction", authOnly, addReaction);

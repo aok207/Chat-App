@@ -3,6 +3,7 @@ import {
   CheckCheck,
   CircleX,
   CornerDownRight,
+  EllipsisVertical,
   Reply,
   Smile,
 } from "lucide-react";
@@ -14,7 +15,7 @@ import EmojiPicker from "./EmojiPicker";
 // import ToolTip from "./ToolTip";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { addReaction, removeReaction } from "@/api/messages";
+import { addReaction, deleteMessage, removeReaction } from "@/api/messages";
 import { EmojiClickData } from "emoji-picker-react";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import ReactionsList from "./ReactionsList";
@@ -22,8 +23,15 @@ import { socket } from "@/sockets/sockets";
 import { useParams } from "react-router-dom";
 import { MessageType, UserType } from "@/types/types";
 import ToolTip from "./ToolTip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type MessageProps = {
+  setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
   message: MessageType;
   repliedMessage: MessageType | null | undefined;
   repliedMessageSender: UserType | null | undefined;
@@ -33,9 +41,11 @@ type MessageProps = {
   messageInputTextarea: HTMLTextAreaElement | null;
   replyingMessage: MessageType | null;
   setReplyingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
+  setEditingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
 };
 
 const Message = ({
+  setMessages,
   message,
   repliedMessage,
   repliedMessageSender,
@@ -45,7 +55,10 @@ const Message = ({
   messageInputTextarea,
   replyingMessage,
   setReplyingMessage,
+  setEditingMessage,
 }: MessageProps) => {
+  const { id } = useParams();
+
   const user = useAppSelector((state) => state.auth.user) as UserType;
   const [isReactionsVisible, setIsReactionsVisible] = useState(false);
   const reactionsButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -95,6 +108,21 @@ const Message = ({
       socket.emit("remove reaction", data.data.emoji, chatId, message._id);
 
       queryClient.invalidateQueries(["message", message._id, "reactions"]);
+    },
+
+    onError: (error: any) => {
+      console.log(error);
+      showToast("error", error.response.data.error || error.message);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteMessage,
+
+    onSuccess: () => {
+      setMessages((prv) => prv.filter((m) => m._id !== message._id));
+      socket.emit("changed messages", id);
+      showToast("success", "Message deleted successfully!");
     },
 
     onError: (error: any) => {
@@ -197,6 +225,28 @@ const Message = ({
     setReplyingMessage(message);
   };
 
+  const changeToEditState = () => {
+    if (!message.content) {
+      return;
+    }
+    messageInputTextarea?.focus();
+    messageInputTextarea!.placeholder = "Edit...";
+    messageInputTextarea!.value = message.content;
+    setEditingMessage(message);
+  };
+
+  const handleDeleteMessage = () => {
+    if (message.senderId !== user._id) {
+      return;
+    }
+
+    if (deleteMutation.isLoading) {
+      return;
+    }
+
+    deleteMutation.mutate(message._id);
+  };
+
   // socket.io events for reactions
   useEffect(() => {
     socket.on(
@@ -279,15 +329,18 @@ const Message = ({
               <div className="bg-purple-600 w-full h-full absolute inset-0 bg-opacity-20" />
             )}
 
-            {/* message that this message replied to */}
+            {/* preview of the message that this message replied to */}
             {repliedMessage && (
               <div className="-mt-1 w-[calc(100%+16px)] -mx-2 py-1.5 px-2 rounded-tl-xl flex justify-between bg-zinc-300 dark:bg-gray-500">
                 <div className="flex gap-2 w-full">
-                  <CornerDownRight />
+                  <CornerDownRight className="flex-shrink-0 w-5 h-5" />
                   {repliedMessage?.type === "image" && (
-                    <img className="w-[80px]" src={repliedMessage?.file?.url} />
+                    <img
+                      className="w-[80px] hidden lg:block"
+                      src={repliedMessage?.file?.url}
+                    />
                   )}
-                  <div className="w-full flex flex-col gap-1">
+                  <div className="w-[90%] flex flex-col gap-1">
                     <strong className="text-sm">
                       {repliedMessageSender?.name || user?.name}
                     </strong>
@@ -307,7 +360,11 @@ const Message = ({
             )}
 
             {message.type === "text" ? (
-              <pre className="text-[1rem] font-normal font-sans text-gray-900 dark:text-white text-left">
+              <pre
+                className={`text-[1rem] font-normal font-sans text-gray-900 dark:text-white ${
+                  message.senderId === user._id ? "text-right" : "text-left"
+                }`}
+              >
                 {message.content}
               </pre>
             ) : message.type === "image" ? (
@@ -415,6 +472,27 @@ const Message = ({
               </button>
             </ToolTip>
 
+            {message.senderId === user._id && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button>
+                    <EllipsisVertical className="w-4 h-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {message.type === "text" && (
+                    <DropdownMenuItem onClick={changeToEditState}>
+                      Edit
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuItem onClick={handleDeleteMessage}>
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {/* Reactions Picker */}
 
             {isReactionsVisible && (
@@ -445,11 +523,11 @@ const Message = ({
               })
             )}
           </span>
-          {/* {message.createdAt !== message.updatedAt && (
+          {message.edited && (
             <span className="block text-xs font-medium z-10 dark:text-slate-300 text-slate-800">
               Edited
             </span>
-          )} */}
+          )}
         </div>
       </div>
     </article>

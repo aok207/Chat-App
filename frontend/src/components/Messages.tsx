@@ -29,6 +29,7 @@ type MessagesProps = {
   messageInputTextarea: HTMLTextAreaElement | null;
   setReplyingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
   replyingMessage: MessageType | null;
+  setEditingMessage: React.Dispatch<React.SetStateAction<MessageType | null>>;
 };
 
 const Messages = ({
@@ -45,6 +46,7 @@ const Messages = ({
   messageInputTextarea,
   setReplyingMessage,
   replyingMessage,
+  setEditingMessage,
 }: MessagesProps) => {
   const currentUser = useAppSelector((state) => state.auth.user);
 
@@ -169,8 +171,8 @@ const Messages = ({
       }
     });
 
-    // receiving message event
-    socket.on("receive message", (otherUserId: string) => {
+    // changes in message event
+    socket.on("messages changed", (otherUserId: string) => {
       if (id === otherUserId) {
         queryClient.invalidateQueries(["messages", id]);
         setTimeout(() => {
@@ -259,6 +261,7 @@ const Messages = ({
                   )
                 )}
                 <Message
+                  setMessages={setMessages}
                   message={message}
                   repliedMessage={
                     message.replyingTo
@@ -270,8 +273,8 @@ const Messages = ({
                       ? participants.find(
                           (p) =>
                             p._id ===
-                            messages.find((m) => m._id === message.replyingTo)!
-                              .senderId
+                            messages.find((m) => m._id === message.replyingTo)
+                              ?.senderId
                         )
                       : null
                   }
@@ -291,6 +294,7 @@ const Messages = ({
                   messageInputTextarea={messageInputTextarea}
                   replyingMessage={replyingMessage}
                   setReplyingMessage={setReplyingMessage}
+                  setEditingMessage={setEditingMessage}
                 />
               </div>
             );

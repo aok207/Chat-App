@@ -6,7 +6,6 @@ import Message from "../models/messageModel";
 import { ChatResponseType, IUser } from "../types";
 import { getFriends, uploadFile } from "../utils/utils";
 import cloudinary from "../config/cloudinary";
-import upload from "../config/multer";
 
 export async function getMessages(req: Request, res: Response) {
   const userId = req.user?._id;
@@ -237,6 +236,72 @@ export async function sendMessage(req: Request, res: Response) {
       error:
         "Something went wrong while sending the message, please try again!",
     });
+  }
+}
+
+export async function editMessage(req: Request, res: Response) {
+  const { id } = req.params;
+
+  const { content } = req.body;
+
+  if (!content) {
+    return res.status(400).json({ error: "Message is required!" });
+  }
+
+  try {
+    const message = await Message.findById(id);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message doesn't exist!" });
+    }
+
+    if (message.senderId.toString() !== req.user?._id.toString()) {
+      return res
+        .status(400)
+        .json({ error: "You are not allow to edit this message!" });
+    }
+
+    message.content = content;
+    message.edited = true;
+    await message.save();
+
+    const updatedMessage = await Message.findById(message._id, { __v: 0 });
+
+    return res.status(200).json({ data: updatedMessage });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: "Something went wrong!" });
+  }
+}
+
+export async function deleteMessage(req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
+    const message = await Message.findById(id);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found!" });
+    }
+
+    // only the sender can delete the message
+    if (req.user?._id.toString() !== message.senderId.toString()) {
+      return res
+        .status(401)
+        .json({ error: "You are not allowed to delete this message!" });
+    }
+
+    // delete file content from cloudinary if any
+    if (message.file) {
+      await cloudinary.uploader.destroy(message.file.public_id);
+    }
+
+    await message.deleteOne();
+
+    return res.sendStatus(204);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ error: "Something went wrong!" });
   }
 }
 

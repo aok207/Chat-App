@@ -11,7 +11,6 @@ import Spinner from "./ui/spinner";
 import { useAppDispatch } from "@/hooks/hooks";
 import { login } from "@/slices/authSlice";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { serverBaseUrl } from "@/lib/constants";
 import { useEffect } from "react";
 import { showToast } from "@/lib/utils";
 import { socket } from "@/sockets/sockets";
@@ -207,7 +206,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
         </p>
       </div>
       <div className="w-full grid grid-cols-2 space-x-2">
-        <a href={`${serverBaseUrl + "/auth/google/redirect"}`}>
+        <a href="/api/v1/auth/google/redirect">
           <Button variant="outline">
             <svg
               className="mr-2 -ml-1 w-4 h-4"
@@ -227,7 +226,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             Sign {type === "login" ? "in" : "up"} with Google
           </Button>
         </a>
-        <a href={`${serverBaseUrl + "/auth/github/redirect"}`}>
+        <a href="/api/v1/auth/github/redirect">
           <Button variant="outline">
             <svg
               className="mr-2 -ml-1 w-4 h-4 shrink-0"

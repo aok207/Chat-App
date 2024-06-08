@@ -25,7 +25,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
     });
 
     // receiving message event if the user is on other pages
-    socket.on("receive message", () => {
+    socket.on("messages changed", () => {
       queryClient.invalidateQueries(["chats"]);
     });
 
@@ -46,7 +46,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel
-            minSize={75}
+            minSize={70}
             className="w-full h-full bg-gray-100 dark:bg-gray-900 overflow-hidden bg"
           >
             {children}
