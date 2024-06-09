@@ -48,6 +48,7 @@ export async function getMessages(req: Request, res: Response) {
     const amount = 10;
 
     const totalMessagesCount = await Message.countDocuments({
+      "recieverId.1": { $exists: false },
       $or: [
         { senderId: userId, receiverId: otherUser._id },
         { senderId: otherUser._id, receiverId: userId },
