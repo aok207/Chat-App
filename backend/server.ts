@@ -25,10 +25,7 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-<<<<<<< HEAD
-=======
     origin: process.env.CLIENT_URL,
->>>>>>> frontend
   })
 );
 app.use(cookieParser());
