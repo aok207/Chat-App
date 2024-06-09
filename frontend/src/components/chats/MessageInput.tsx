@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import EmojiPicker from "./EmojiPicker";
 import { v4 as uuidv4 } from "uuid";
+import { ScrollArea } from "../ui/scroll-area";
 
 type MessageInputProps = {
   setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
@@ -98,6 +99,11 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
     const adjustTextareaHeight = () => {
       const textarea = getTextareaValue();
       if (textarea) {
+        if (textarea.scrollHeight > 128) {
+          textarea.style.height = "128px";
+          return;
+        }
+
         if (textarea.value === "" || textarea.scrollHeight < 48) {
           textarea.style.height = "22px";
           return;

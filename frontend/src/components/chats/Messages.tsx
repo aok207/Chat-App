@@ -221,7 +221,7 @@ const Messages = ({
       className="w-full h-full flex flex-col z-10"
       onScroll={handleScroll}
     >
-      <div className="p-2 py-8 pt-10 px-4 flex flex-col gap-4 w-full h-full items-center relative">
+      <div className="p-2 py-8 pt-10 px-4 flex flex-col gap-4 w-screen lg:w-full h-full items-center relative">
         {(isLoading || isFetchingNextPage) && (
           <Spinner width={10} height={10} />
         )}

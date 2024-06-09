@@ -284,7 +284,7 @@ const Message = ({
       }`}
     >
       <div
-        className={`w-[45%] relative flex flex-col gap-2 ${
+        className={`w-[95%] sm:w-[70%] lg:w-[80%] relative flex flex-col gap-2 ${
           user._id === message.senderId
             ? "flex-row-reverse items-end"
             : "flex-row items-start"
@@ -300,9 +300,9 @@ const Message = ({
             <Avatar name={name} image={`${avatar}`} isOnline={false} />
           </div>
           <div
-            className={`h-fit ${
+            className={`${
               message.type?.split("/")[0] === "text"
-                ? "px-2 py-1"
+                ? "pb-1"
                 : "object-cover overflow-hidden"
             } ${
               message.status !== "error"
@@ -316,8 +316,9 @@ const Message = ({
                 : message.senderId === user._id
                 ? "rounded-xl rounded-tr-none pb-2"
                 : "rounded-xl rounded-tl-none"
-            } ${message.mimeType?.split("/")[0] === "audio" ? "w-full" : ""}
-            ${
+            } ${
+              message.mimeType?.split("/")[0] === "audio" ? "w-full" : "w-fit"
+            } ${
               replyingMessage?._id === message._id
                 ? "border-2 border-purple-700"
                 : ""
@@ -331,12 +332,12 @@ const Message = ({
 
             {/* preview of the message that this message replied to */}
             {repliedMessage && (
-              <div className="-mt-1 w-[calc(100%+16px)] -mx-2 py-1.5 px-2 rounded-tl-xl flex justify-between bg-zinc-300 dark:bg-gray-500">
-                <div className="flex gap-2 w-full">
-                  <CornerDownRight className="flex-shrink-0 w-5 h-5" />
+              <div className="w-full py-1.5 px-2 rounded-tl-xl flex justify-center items-center bg-zinc-300 dark:bg-gray-500">
+                <div className="flex justify-center items-center gap-2 w-full">
+                  <CornerDownRight className="flex-shrink-0 w-4 h-4" />
                   {repliedMessage?.type === "image" && (
                     <img
-                      className="w-[80px] hidden lg:block"
+                      className="w-[40px] aspect-auto hidden sm:block lg:w-[50px]"
                       src={repliedMessage?.file?.url}
                     />
                   )}
@@ -344,9 +345,11 @@ const Message = ({
                     <strong className="text-sm">
                       {repliedMessageSender?.name || user?.name}
                     </strong>
-                    <i className="truncate w-full">
+                    <i className="truncate w-[90%]">
                       {repliedMessage?.type === "text"
-                        ? repliedMessage?.content
+                        ? message?.type === "image"
+                          ? repliedMessage?.content
+                          : repliedMessage?.content?.slice(0, 15)
                         : repliedMessage?.type === "video"
                         ? "Audio Message"
                         : `${
@@ -360,11 +363,7 @@ const Message = ({
             )}
 
             {message.type === "text" ? (
-              <pre
-                className={`text-[1rem] font-normal font-sans text-gray-900 dark:text-white ${
-                  message.senderId === user._id ? "text-right" : "text-left"
-                }`}
-              >
+              <pre className="px-2 py-2 text-[1rem] w-fit text-wrap font-normal font-sans text-gray-900 dark:text-white text-left">
                 {message.content}
               </pre>
             ) : message.type === "image" ? (
@@ -390,7 +389,7 @@ const Message = ({
 
             {/* Status */}
             <div
-              className={`w-fit h-full flex-shrink-0 ${
+              className={`mx-2 w-fit h-full flex-shrink-0 ${
                 message.type?.split("/")[0] === "text" ? "" : "mr-2"
               }`}
             >

@@ -36,10 +36,10 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
 
   return (
     <ProtectedRoutes type="auth">
-      <div className="w-full h-full hidden md:block">
+      <div className="w-full h-full hidden lg:block">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
-            minSize={10}
+            minSize={20}
             className="overflow-hidden h-screen w-[35%] md:w-[25%] lg:w-[20%]"
           >
             <ConversationList />
@@ -54,7 +54,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
         </ResizablePanelGroup>
       </div>
       {/* for mobile */}
-      <div className="w-full h-full md:hidden overflow-hidden">
+      <div className="w-full h-full lg:hidden overflow-hidden">
         {currentPage === "chats-list" || currentPage === "search" ? (
           <ConversationList />
         ) : (
