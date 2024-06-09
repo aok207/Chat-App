@@ -4,7 +4,7 @@ import {
   ReactionsResponseType,
   UserType,
 } from "@/types/types";
-import api from "./api";
+import api from ".";
 
 export function getChatsForUser(): Promise<{
   data: ChatResponseType[];

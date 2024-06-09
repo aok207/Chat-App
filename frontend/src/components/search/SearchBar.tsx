@@ -1,9 +1,9 @@
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { ChangeEvent, useState } from "react";
 import { SearchIcon, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { setSearchQuery, setCurrentPage } from "@/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { setSearchQuery, setCurrentPage } from "@/store/slices/uiSlice";
 
 const SearchBar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sendMessage, updateMessage } from "@/api/messages";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/useRedux";
 import { showToast } from "@/lib/utils";
 import { socket } from "@/sockets/sockets";
 import { MessageType } from "@/types/types";

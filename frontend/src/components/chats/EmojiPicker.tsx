@@ -3,7 +3,7 @@ import ReactEmojiPicker, {
   EmojiStyle,
   EmojiClickData,
 } from "emoji-picker-react";
-import { useTheme } from "./theme-provider";
+import { useTheme } from "../shared/theme-provider";
 
 const EmojiPicker = ({
   isReaction,

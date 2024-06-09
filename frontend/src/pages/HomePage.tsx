@@ -1,5 +1,5 @@
-import { useAppDispatch } from "@/hooks/hooks";
-import { setCurrentPage } from "@/slices/uiSlice";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setCurrentPage } from "@/store/slices/uiSlice";
 import { useEffect } from "react";
 
 const HomePage = () => {

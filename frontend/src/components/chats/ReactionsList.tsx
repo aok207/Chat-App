@@ -4,14 +4,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "../ui/dialog";
 import { getReactions } from "@/api/messages";
-import Spinner from "./ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import Spinner from "../ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import Chat from "./Chat";
 import { UserType } from "@/types/types";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const Reaction = ({ user, emoji }: { user: UserType; emoji: string }) => {
   const userId = useAppSelector((state) => state.auth.user?._id);

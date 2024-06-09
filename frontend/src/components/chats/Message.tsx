@@ -7,8 +7,8 @@ import {
   Reply,
   Smile,
 } from "lucide-react";
-import { useAppSelector } from "@/hooks/hooks";
-import Avatar from "./Avatar";
+import { useAppSelector } from "@/hooks/useRedux";
+import Avatar from "../shared/Avatar";
 import { formatTime, showToast } from "@/lib/utils";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import EmojiPicker from "./EmojiPicker";
@@ -17,12 +17,12 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { addReaction, deleteMessage, removeReaction } from "@/api/messages";
 import { EmojiClickData } from "emoji-picker-react";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 import ReactionsList from "./ReactionsList";
 import { socket } from "@/sockets/sockets";
 import { useParams } from "react-router-dom";
 import { MessageType, UserType } from "@/types/types";
-import ToolTip from "./ToolTip";
+import ToolTip from "../shared/ToolTip";
 import {
   DropdownMenu,
   DropdownMenuContent,

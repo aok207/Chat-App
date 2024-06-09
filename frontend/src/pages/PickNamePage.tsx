@@ -10,8 +10,8 @@ import { useState } from "react";
 import { searchUsersByName, updateUserInfo } from "@/api/users";
 import Spinner from "@/components/ui/spinner";
 import { showToast } from "@/lib/utils";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { login } from "@/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { login } from "@/store/slices/authSlice";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const PickNamePage = () => {

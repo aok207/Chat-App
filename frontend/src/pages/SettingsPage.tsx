@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { deleteAccount, updateUserInfo, updateUserPassword } from "@/api/users";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/shared/DeleteModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Spinner from "@/components/ui/spinner";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { makeFallbackAvatar, showToast } from "@/lib/utils";
-import { login, logout } from "@/slices/authSlice";
-import { setCurrentPage, setSearchQuery } from "@/slices/uiSlice";
+import { login, logout } from "@/store/slices/authSlice";
+import { setCurrentPage, setSearchQuery } from "@/store/slices/uiSlice";
 import { IUpdatePasswordInputs, IUpdateProfileInputs } from "@/types/types";
 import { ArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";

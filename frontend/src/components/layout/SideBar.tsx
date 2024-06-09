@@ -11,20 +11,20 @@ import {
   Moon,
   UsersRound,
 } from "lucide-react";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { updateUserInfo } from "@/api/users";
 import { postLogOut } from "@/api/auth";
 import { useMutation } from "react-query";
 import { useDispatch } from "react-redux";
-import { login, logout } from "@/slices/authSlice";
-import Spinner from "./ui/spinner";
-import { Button } from "./ui/button";
+import { login, logout } from "@/store/slices/authSlice";
+import Spinner from "../ui/spinner";
+import { Button } from "../ui/button";
 import { Link, NavigateFunction } from "react-router-dom";
-import { Switch } from "./ui/switch";
-import { useTheme } from "./theme-provider";
+import { Switch } from "../ui/switch";
+import { useTheme } from "../shared/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { UserType } from "@/types/types";
-import Avatar from "./Avatar";
+import Avatar from "../shared/Avatar";
 import { socket } from "@/sockets/sockets";
 
 type SideBarProps = {

@@ -9,8 +9,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import React from "react";
-import { Button } from "./ui/button";
-import Spinner from "./ui/spinner";
+import { Button } from "../ui/button";
+import Spinner from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 type DeleteModalProps = {

@@ -1,19 +1,19 @@
-import { useAppSelector } from "@/hooks/hooks";
-import Navbar from "./Navbar";
+import { useAppSelector } from "@/hooks/useRedux";
+import Navbar from "../layout/Navbar";
 import { useQuery } from "react-query";
 import { searchUsersByName } from "@/api/users";
 import { cn, showToast } from "@/lib/utils";
-import Search from "./Search";
+import Search from "../search/Search";
 import { AnimatePresence, motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import Chat from "./Chat";
 import { getChatsForUser } from "@/api/messages";
-import Spinner from "./ui/spinner";
+import Spinner from "../ui/spinner";
 import { ChatResponseType } from "@/types/types";
 import { useEffect, useState } from "react";
 import { socket } from "@/sockets/sockets";
 import { Plus } from "lucide-react";
-import ToolTip from "./ToolTip";
+import ToolTip from "../shared/ToolTip";
 
 const ConversationList = () => {
   const currentUser = useAppSelector((state) => state.auth.user);

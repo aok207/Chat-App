@@ -1,4 +1,4 @@
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/useRedux";
 import { MessageType, UserType } from "@/types/types";
 import { X } from "lucide-react";
 import React from "react";

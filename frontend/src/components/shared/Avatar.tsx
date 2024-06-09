@@ -3,7 +3,7 @@ import {
   AvatarImage,
   AvatarFallback,
   Avatar as ShadcnAvatar,
-} from "./ui/avatar";
+} from "../ui/avatar";
 
 const Avatar = ({
   name,

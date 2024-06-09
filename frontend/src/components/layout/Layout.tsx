@@ -4,9 +4,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import ConversationList from "./ConversationList";
-import { useAppSelector } from "@/hooks/hooks";
-import ProtectedRoutes from "./ProtectedRoutes";
+import ConversationList from "../chats/ConversationList";
+import { useAppSelector } from "@/hooks/useRedux";
+import ProtectedRoutes from "../shared/ProtectedRoutes";
 import { socket } from "@/sockets/sockets";
 import { useQueryClient } from "react-query";
 

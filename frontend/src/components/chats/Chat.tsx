@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import Avatar from "./Avatar";
-import { useAppSelector } from "@/hooks/hooks";
+import Avatar from "../shared/Avatar";
+import { useAppSelector } from "@/hooks/useRedux";
 import { CheckCheck } from "lucide-react";
 import { formatSentDate } from "@/lib/utils";
 

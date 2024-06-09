@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/useRedux";
 import { Navigate } from "react-router-dom";
 
 type ProtectedRoutesProps = {

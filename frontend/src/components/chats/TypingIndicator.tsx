@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Avatar from "./Avatar";
+import Avatar from "../shared/Avatar";
 
 const TypingIndicator = ({
   avatar,

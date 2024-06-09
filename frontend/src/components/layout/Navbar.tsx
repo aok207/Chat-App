@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import SideBar from "@/components/SideBar";
+import SideBar from "./SideBar";
 import { UseQueryResult } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { UserType } from "@/types/types";
-import SearchBar from "./SearchBar";
+import SearchBar from "../search/SearchBar";
 
 const Navbar = ({
   user,

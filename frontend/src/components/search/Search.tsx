@@ -1,9 +1,9 @@
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/useRedux";
 import { ChatResponseType, UserType } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "./ui/skeleton";
-import Chat from "./Chat";
+import { Skeleton } from "../ui/skeleton";
+import Chat from "../chats/Chat";
 
 const containerVariant = {
   hidden: { opacity: 0 },
@@ -96,6 +96,7 @@ const Search = ({
                           isOnline={user.isOnline}
                           latestMessageSenderId={null}
                           latestMessageStatus={null}
+                          latestMessageType={null}
                         />
                       ) : (
                         <Chat
@@ -123,6 +124,7 @@ const Search = ({
                           avatar={user.avatar}
                           name={user.name}
                           isOnline={user.isOnline}
+                          latestMessageType={null}
                         />
                       )}
                     </motion.div>

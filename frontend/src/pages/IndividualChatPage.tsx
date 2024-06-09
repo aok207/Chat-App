@@ -2,13 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { pageVariant } from "@/framerMotion/variants";
-import MessageInput from "@/components/MessageInput";
+import MessageInput from "@/components/chats/MessageInput";
 import { MessageType, UserType } from "@/types/types";
-import Messages from "@/components/Messages";
-import ChatNav from "@/components/ChatNav";
-import { useAppSelector } from "@/hooks/hooks";
+import Messages from "@/components/chats/Messages";
+import ChatNav from "@/components/chats/ChatNav";
+import { useAppSelector } from "@/hooks/useRedux";
 import { useNavigate, useParams } from "react-router-dom";
-import DetailMode from "@/components/DetailMode";
+import DetailMode from "@/components/chats/DetailMode";
 
 const IndividualChatPage = () => {
   const lastEleRef = useRef<HTMLDivElement | null>(null);

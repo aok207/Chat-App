@@ -1,7 +1,7 @@
 import { ArrowLeft, PanelRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import Avatar from "./Avatar";
-import Spinner from "./ui/spinner";
+import Avatar from "../shared/Avatar";
+import Spinner from "../ui/spinner";
 import { formatActiveTime } from "@/lib/utils";
 import { UserType } from "@/types/types";
 

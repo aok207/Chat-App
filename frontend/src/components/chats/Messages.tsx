@@ -2,17 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { setCurrentPage, setSearchQuery } from "@/slices/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { setCurrentPage, setSearchQuery } from "@/store/slices/uiSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowDown } from "lucide-react";
-import Message from "@/components/Message";
+import Message from "@/components/chats/Message";
 import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import { getMessages, markAsRead } from "@/api/messages";
 import Spinner from "@/components/ui/spinner";
 import { MessageType, UserType } from "@/types/types";
 import { socket } from "@/sockets/sockets";
-import TypingIndicator from "@/components/TypingIndicator";
+import TypingIndicator from "@/components/chats/TypingIndicator";
 import { formatSentDate } from "@/lib/utils";
 
 type MessagesProps = {
