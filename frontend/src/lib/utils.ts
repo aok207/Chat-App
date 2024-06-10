@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { toast, Bounce } from "react-toastify";
+import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -142,4 +143,32 @@ export const formatActiveTime = (targetTime: Date) => {
 
   const yearspast = Math.floor(secondsPast / 31557600);
   return `${yearspast} year${yearspast === 1 ? "" : "s"} ago`;
+};
+
+export const convertFileSize = (sizeInBytes: number) => {
+  const fileInKB = sizeInBytes / 1024;
+  const fileInMB = fileInKB / 1024;
+  const fileInGB = fileInMB / 1024;
+
+  if (fileInGB >= 1) {
+    return `${fileInGB.toFixed(2)} GB`;
+  } else if (fileInMB >= 1) {
+    return `${fileInMB.toFixed(2)} MB`;
+  } else {
+    return `${fileInKB.toFixed(2)} KB`;
+  }
+};
+
+export const downloadFile = (url: string, fileName: string) => {
+  axios.get(url, { responseType: "blob" }).then((res) => {
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${fileName}`);
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up and remove the link
+    link.parentNode?.removeChild(link);
+  });
 };

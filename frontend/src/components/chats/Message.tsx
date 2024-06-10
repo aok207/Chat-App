@@ -3,13 +3,20 @@ import {
   CheckCheck,
   CircleX,
   CornerDownRight,
+  Download,
   EllipsisVertical,
+  FileMinus,
   Reply,
   Smile,
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import Avatar from "../shared/Avatar";
-import { formatTime, showToast } from "@/lib/utils";
+import {
+  convertFileSize,
+  downloadFile,
+  formatTime,
+  showToast,
+} from "@/lib/utils";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import EmojiPicker from "./EmojiPicker";
 // import ToolTip from "./ToolTip";
@@ -300,13 +307,9 @@ const Message = ({
             <Avatar name={name} image={`${avatar}`} isOnline={false} />
           </div>
           <div
-            className={`${
-              message.type?.split("/")[0] === "text"
-                ? "pb-1"
-                : "object-cover overflow-hidden"
-            } ${
+            className={`${message.type === "text" ? "pb-1" : "object-cover"} ${
               message.status !== "error"
-                ? message.type === "text"
+                ? message.type === "text" || message.type === "raw"
                   ? "bg-gray-200 dark:bg-gray-700"
                   : "bg-transparent"
                 : "bg-red-600"
@@ -345,17 +348,29 @@ const Message = ({
                     <strong className="text-sm">
                       {repliedMessageSender?.name || user?.name}
                     </strong>
-                    <i className="truncate w-[90%]">
-                      {repliedMessage?.type === "text"
-                        ? message?.type === "image"
-                          ? repliedMessage?.content
-                          : repliedMessage?.content?.slice(0, 15)
-                        : repliedMessage?.type === "video"
-                        ? "Audio Message"
-                        : `${
-                            repliedMessage!.type![0]!.toUpperCase() +
-                            repliedMessage!.type!.slice(1)
-                          } Message`}
+                    <i
+                      className={`${
+                        repliedMessage?.type === "text" ? "truncate" : ""
+                      } w-[90%]`}
+                    >
+                      {repliedMessage?.type === "text" ? (
+                        message?.type === "image" ? (
+                          repliedMessage?.content
+                        ) : (
+                          repliedMessage?.content?.slice(0, 15)
+                        )
+                      ) : repliedMessage?.type === "video" ? (
+                        "Audio Message"
+                      ) : repliedMessage?.type === "raw" ? (
+                        <div className="flex gap-0.5">
+                          <FileMinus /> {repliedMessage.file?.name}
+                        </div>
+                      ) : (
+                        `${
+                          repliedMessage!.type![0]!.toUpperCase() +
+                          repliedMessage!.type!.slice(1)
+                        } Message`
+                      )}
                     </i>
                   </div>
                 </div>
@@ -384,12 +399,33 @@ const Message = ({
                 </audio>
               </div>
             ) : (
-              <></>
+              <div className="flex gap-4 p-2">
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1">
+                    <FileMinus />
+                    <h1>{message.file?.name}</h1>
+                  </div>
+                  <div className="flex gap-2 text-gray-500 font-semibold">
+                    <span>{convertFileSize(message.file?.size as number)}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() =>
+                    downloadFile(
+                      message.file?.url as string,
+                      message.file?.name as string
+                    )
+                  }
+                  className="rounded-lg p-2 h-fit hover:bg-gray-500 transition-colors"
+                >
+                  <Download />
+                </button>
+              </div>
             )}
 
             {/* Status */}
             <div
-              className={`mx-2 w-fit h-full flex-shrink-0 ${
+              className={`mx-2 mb-1 w-fit h-full flex-shrink-0 ${
                 message.type?.split("/")[0] === "text" ? "" : "mr-2"
               }`}
             >
@@ -498,7 +534,7 @@ const Message = ({
               <div
                 ref={emojiPickerRef}
                 className={`absolute bottom-full z-40 ${
-                  user._id === message.senderId ? "left-0" : "-left-full"
+                  user._id === message.senderId ? "-right-16" : "-left-full"
                 }`}
               >
                 <EmojiPicker

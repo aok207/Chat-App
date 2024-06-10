@@ -175,9 +175,9 @@ const Messages = ({
     socket.on("messages changed", (otherUserId: string) => {
       if (id === otherUserId) {
         queryClient.invalidateQueries(["messages", id]);
-        setTimeout(() => {
-          queryClient.invalidateQueries(["chats"]);
-        }, 3000);
+        // setTimeout(() => {
+        //   queryClient.invalidateQueries(["chats"]);
+        // }, 3000);
 
         if (isLastEleVisible) {
           lastEleRef.current?.scrollIntoView({ behavior: "smooth" });

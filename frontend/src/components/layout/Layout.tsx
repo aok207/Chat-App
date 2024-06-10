@@ -9,10 +9,12 @@ import { useAppSelector } from "@/hooks/useRedux";
 import ProtectedRoutes from "../shared/ProtectedRoutes";
 import { socket } from "@/sockets/sockets";
 import { useQueryClient } from "react-query";
+import useSound from "@/hooks/useSound";
 
 const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
   const currentPage = useAppSelector((state) => state.ui.currentPage);
   const queryClient = useQueryClient();
+  const notiSound = useSound("/sounds/message-noti.mp3");
 
   useEffect(() => {
     // connect to sockets.io
@@ -27,6 +29,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
     // receiving message event if the user is on other pages
     socket.on("messages changed", () => {
       queryClient.invalidateQueries(["chats"]);
+      notiSound.play();
     });
 
     return () => {

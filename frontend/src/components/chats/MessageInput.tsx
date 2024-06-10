@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import EmojiPicker from "./EmojiPicker";
 import { v4 as uuidv4 } from "uuid";
 import { ScrollArea } from "../ui/scroll-area";
+import useSound from "@/hooks/useSound";
 
 type MessageInputProps = {
   setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
@@ -43,6 +44,9 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
 
     const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
 
+    // sounds
+    const sentSound = useSound("/sounds/message-sent.mp3");
+
     // function to safely get the current value of the ref
     const getTextareaValue = () => {
       if (typeof messageInputRef === "function") {
@@ -55,6 +59,7 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
     const { mutate, isLoading } = useMutation({
       mutationFn: sendMessage,
       onSuccess: (data) => {
+        sentSound.play();
         socket.emit("changed messages", id);
         const message = data.data;
         lastEle?.scrollIntoView({ behavior: "smooth" });
@@ -194,7 +199,7 @@ const MessageInput = forwardRef<HTMLTextAreaElement | null, MessageInputProps>(
         ...prev,
         {
           _id: uuidv4(),
-          content: "hi",
+          content: null,
           status: "sending",
           createdAt: new Date(),
           updatedAt: new Date(),

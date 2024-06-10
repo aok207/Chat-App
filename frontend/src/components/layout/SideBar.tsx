@@ -9,7 +9,7 @@ import {
   LogOutIcon,
   SettingsIcon,
   Moon,
-  UsersRound,
+  // UsersRound,
 } from "lucide-react";
 import { Input } from "../ui/input";
 import { updateUserInfo } from "@/api/users";
@@ -34,11 +34,11 @@ type SideBarProps = {
 };
 
 const menus = [
-  {
-    icon: <UsersRound />,
-    link: "/new-group",
-    text: "New Group",
-  },
+  // {
+  //   icon: <UsersRound />,
+  //   link: "/new-group",
+  //   text: "New Group",
+  // },
   {
     icon: <SettingsIcon />,
     link: "/settings",

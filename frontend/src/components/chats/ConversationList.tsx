@@ -12,8 +12,8 @@ import Spinner from "../ui/spinner";
 import { ChatResponseType } from "@/types/types";
 import { useEffect, useState } from "react";
 import { socket } from "@/sockets/sockets";
-import { Plus } from "lucide-react";
-import ToolTip from "../shared/ToolTip";
+// import { Plus } from "lucide-react";
+// import ToolTip from "../shared/ToolTip";
 
 const ConversationList = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -93,7 +93,7 @@ const ConversationList = () => {
           <div className="flex-grow">
             <Navbar user={currentUser} searchUsersQuery={searchUsersQuery} />
           </div>
-          <AnimatePresence mode="popLayout">
+          {/* <AnimatePresence mode="popLayout">
             {currentPage !== "search" && (
               <motion.div
                 className="flex flex-shrink-0"
@@ -122,7 +122,7 @@ const ConversationList = () => {
                 </TabsList>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
           {/* </LayoutGroup> */}
         </div>
         {currentPage !== "search" ? (
@@ -184,7 +184,7 @@ const ConversationList = () => {
           </AnimatePresence>
         )}
       </Tabs>
-      <motion.div
+      {/* <motion.div
         className="absolute rounded-full p-3 bg-gray-400 text-gray-200 dark:bg-gray-700 right-8 bottom-4 flex items-center justify-center w-fit h-fit"
         whileHover={{
           y: -5,
@@ -199,7 +199,7 @@ const ConversationList = () => {
             <Plus />
           </button>
         </ToolTip>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };
