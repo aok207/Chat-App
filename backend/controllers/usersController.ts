@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcrypt from "bcryptjs";
-import { hashPassword } from "../utils/utils";
+import { hashPassword, uploadFile } from "../utils/utils";
 
 function getUserProfile(req: Request, res: Response) {
   res.status(200).json(req.user);
@@ -40,28 +40,12 @@ async function updateUserProfile(req: Request, res: Response) {
         .json({ error: "The file size cannot be larger than 10 MB!" });
     }
 
-    try {
-      const formData = new FormData();
-      formData.append("image", avatar.buffer.toString("base64"));
-      const response = await fetch(
-        `${process.env.IMAGE_API_URL as string}?key=${
-          process.env.IMAGE_API_KEY
-        }`,
-        {
-          method: "post",
-          body: formData,
-        }
-      );
+    const b64 = Buffer.from(avatar.buffer).toString("base64");
+    const dataURI = "data:" + avatar.mimetype + ";base64," + b64;
+    const uploadResult = await uploadFile(dataURI);
 
-      if (response.ok) {
-        const res = await response.json();
-        imageUrl = res.data.url;
-      }
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({
-        error: "There was an error in uploading your profile picture!",
-      });
+    if (uploadResult.secure_url) {
+      imageUrl = uploadResult.secure_url;
     }
   }
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, PanelRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import Avatar from "../shared/Avatar";
 import Spinner from "../ui/spinner";
@@ -43,11 +43,11 @@ const ChatNav = ({ otherUser, isLoading }: ChatNavProps) => {
           </span>
         </div>
       </div>
-      <div>
+      {/* <div>
         <button>
           <PanelRight className="w-5 h-5" />
         </button>
-      </div>
+      </div> */}
     </nav>
   );
 };

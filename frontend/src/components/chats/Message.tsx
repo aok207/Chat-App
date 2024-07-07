@@ -6,8 +6,11 @@ import {
   Download,
   EllipsisVertical,
   FileMinus,
+  Forward,
+  Pencil,
   Reply,
   Smile,
+  Trash2,
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import Avatar from "../shared/Avatar";
@@ -515,14 +518,24 @@ const Message = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                  <DropdownMenuItem className="flex gap-2 cursor-pointer">
+                    <Forward className="w-4" /> Forward
+                  </DropdownMenuItem>
+
                   {message.type === "text" && (
-                    <DropdownMenuItem onClick={changeToEditState}>
-                      Edit
+                    <DropdownMenuItem
+                      onClick={changeToEditState}
+                      className="flex gap-2 cursor-pointer"
+                    >
+                      <Pencil className="w-4" /> Edit
                     </DropdownMenuItem>
                   )}
 
-                  <DropdownMenuItem onClick={handleDeleteMessage}>
-                    Delete
+                  <DropdownMenuItem
+                    onClick={handleDeleteMessage}
+                    className="flex gap-2 cursor-pointer"
+                  >
+                    <Trash2 className="w-4" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
