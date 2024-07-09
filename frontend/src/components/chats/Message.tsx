@@ -39,6 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ForwardMessage from "./ForwardMessage";
 
 type MessageProps = {
   setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
@@ -486,12 +487,12 @@ const Message = ({
             )}
           </div>
 
-          {/* Add reaction btn */}
           <div
             className={`relative h-fit flex gap-2 items-center ${
               message.senderId === user._id ? "flex-row-reverse" : "flex-row"
             }`}
           >
+            {/* Add reaction btn */}
             <ToolTip text="Reactions">
               <button
                 ref={reactionsButtonRef}
@@ -510,7 +511,8 @@ const Message = ({
               </button>
             </ToolTip>
 
-            {message.senderId === user._id && (
+            {/* Dropdown */}
+            <Dialog>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button>
@@ -518,28 +520,38 @@ const Message = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem className="flex gap-2 cursor-pointer">
-                    <Forward className="w-4" /> Forward
-                  </DropdownMenuItem>
-
-                  {message.type === "text" && (
+                  <DialogTrigger className="w-full">
                     <DropdownMenuItem
-                      onClick={changeToEditState}
                       className="flex gap-2 cursor-pointer"
+                      onSelect={(e) => e.preventDefault()}
                     >
-                      <Pencil className="w-4" /> Edit
+                      <Forward className="w-4" /> Forward
                     </DropdownMenuItem>
-                  )}
+                  </DialogTrigger>
 
-                  <DropdownMenuItem
-                    onClick={handleDeleteMessage}
-                    className="flex gap-2 cursor-pointer"
-                  >
-                    <Trash2 className="w-4" /> Delete
-                  </DropdownMenuItem>
+                  {message.senderId === user._id && (
+                    <>
+                      {message.type == "text" && (
+                        <DropdownMenuItem
+                          onClick={changeToEditState}
+                          className="flex gap-2 cursor-pointer"
+                        >
+                          <Pencil className="w-4" /> Edit
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={handleDeleteMessage}
+                        className="flex gap-2 cursor-pointer"
+                      >
+                        <Trash2 className="w-4" /> Delete
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
-            )}
+
+              <ForwardMessage message={message} />
+            </Dialog>
 
             {/* Reactions Picker */}
 

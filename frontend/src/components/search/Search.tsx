@@ -36,7 +36,7 @@ const Search = ({
   chats,
 }: {
   isLoading: boolean;
-  users: UserType[];
+  users: UserType[] | undefined;
   chats: ChatResponseType[] | undefined;
 }) => {
   const searchQuery = useAppSelector((state) => state.ui.searchQuery);
@@ -124,7 +124,11 @@ const Search = ({
                           avatar={user.avatar}
                           name={user.name}
                           isOnline={user.isOnline}
-                          latestMessageType={null}
+                          latestMessageType={
+                            chats?.filter(
+                              (chat) => chat.otherUser._id === user._id
+                            )[0].latestMessageType as string
+                          }
                         />
                       )}
                     </motion.div>

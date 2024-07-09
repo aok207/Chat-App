@@ -13,7 +13,7 @@ type ChatProps = {
   latestTime: Date | null | undefined;
   latestMessageStatus: string | null;
   latestMessageSenderId: string | null;
-  latestMessageType: string | null;
+  latestMessageType: string | undefined | null;
 };
 
 const Chat = ({
@@ -32,7 +32,7 @@ const Chat = ({
 
   return (
     <Link
-      to={userId === chatId ? "/" : `/chat/${chatId}`}
+      to={userId === chatId ? "#" : `/chat/${chatId}`}
       className="w-full h-fit"
     >
       <div
@@ -67,7 +67,7 @@ const Chat = ({
                 {latestMessage}
               </p>
             ) : (
-              latestMessage && (
+              latestMessage !== null && (
                 <p
                   className={`text-sm ${
                     latestMessageSenderId !== userId &&
@@ -84,7 +84,7 @@ const Chat = ({
                       )
                     ? "an"
                     : "a"}{" "}
-                  {latestMessageType}
+                  {latestMessageType === "raw" ? "file" : latestMessageType}.
                 </p>
               )
             )}
@@ -94,11 +94,13 @@ const Chat = ({
               latestMessageStatus !== "read" && (
                 <div className="w-3 h-3 rounded-full absolute bottom-2 right-2 shadow-md bg-purple-500" />
               )}
-            {latestMessageSenderId === userId &&
+            {latestMessageSenderId !== null &&
+              latestMessageSenderId === userId &&
               latestMessageStatus === "sent" && (
                 <CheckCheck className="w-3 h-3 absolute bottom-2 right-2" />
               )}
-            {latestMessageSenderId === userId &&
+            {latestMessageSenderId !== null &&
+              latestMessageSenderId === userId &&
               latestMessageStatus === "read" && (
                 <CheckCheck className="w-3 h-3 absolute bottom-2 right-2 text-purple-500" />
               )}

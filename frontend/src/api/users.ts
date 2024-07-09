@@ -1,10 +1,13 @@
+import { UserType } from "@/types/types";
 import api from ".";
 
 export const getUserProfile = () => {
   return api.get("/users/profile").then((res) => res.data);
 };
 
-export const searchUsersByName = (name: string) => {
+export const searchUsersByName = (
+  name: string
+): Promise<{ data: UserType[] }> => {
   return api.get(`/users/profile/search?name=${name}`).then((res) => res.data);
 };
 

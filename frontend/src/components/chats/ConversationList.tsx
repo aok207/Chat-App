@@ -4,8 +4,8 @@ import { useQuery } from "react-query";
 import { searchUsersByName } from "@/api/users";
 import { cn, showToast } from "@/lib/utils";
 import Search from "../search/Search";
-import { AnimatePresence, motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { AnimatePresence } from "framer-motion";
+import { Tabs, TabsContent } from "../ui/tabs";
 import Chat from "./Chat";
 import { getChatsForUser } from "@/api/messages";
 import Spinner from "../ui/spinner";
@@ -148,20 +148,35 @@ const ConversationList = () => {
                     ) : (
                       <>
                         {chats &&
-                          chats.map((chat) => (
-                            <Chat
-                              key={chat.otherUser._id}
-                              chatId={chat.otherUser._id}
-                              latestMessage={chat.latestMessage}
-                              isOnline={chat.otherUser.isOnline}
-                              avatar={chat.otherUser.avatar}
-                              latestTime={chat.latestTime}
-                              name={chat.otherUser.name}
-                              latestMessageStatus={chat.latestMessageStatus}
-                              latestMessageSenderId={chat.latestMessageSenderId}
-                              latestMessageType={chat.latestMessageType}
-                            />
-                          ))}
+                          chats
+                            .sort((a, b) => {
+                              if (!a.latestTime) {
+                                return 1;
+                              }
+
+                              if (!b.latestTime) {
+                                return -1;
+                              }
+                              const aTime = new Date(a.latestTime);
+                              const bTime = new Date(b.latestTime);
+                              return bTime.getTime() - aTime.getTime();
+                            })
+                            .map((chat) => (
+                              <Chat
+                                key={chat.otherUser._id}
+                                chatId={chat.otherUser._id}
+                                latestMessage={chat.latestMessage}
+                                isOnline={chat.otherUser.isOnline}
+                                avatar={chat.otherUser.avatar}
+                                latestTime={chat.latestTime}
+                                name={chat.otherUser.name}
+                                latestMessageStatus={chat.latestMessageStatus}
+                                latestMessageSenderId={
+                                  chat.latestMessageSenderId
+                                }
+                                latestMessageType={chat.latestMessageType}
+                              />
+                            ))}
                       </>
                     )}
                   </>

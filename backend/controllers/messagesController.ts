@@ -122,15 +122,24 @@ export async function sendMessage(req: Request, res: Response) {
   try {
     const { receiverId } = req.params;
     const userId = req.user?._id;
-    const { message, replyingTo }: { message: string; replyingTo: string } =
-      req.body;
+    const {
+      message,
+      replyingTo,
+      fileObj,
+      fileType,
+    }: {
+      message: string;
+      replyingTo: string;
+      fileObj: string;
+      fileType: string;
+    } = req.body;
     const file = req.file;
 
     if (!receiverId || !userId) {
       return res.status(400).json({ error: "Invalid message!" });
     }
 
-    if (!message && !file) {
+    if (!message && !file && !fileObj) {
       return res.status(400).json({ error: "Message content is needed." });
     }
 
@@ -155,8 +164,8 @@ export async function sendMessage(req: Request, res: Response) {
       }
     }
 
-    const fileType = file?.mimetype.split("/")[0];
-    if (fileType === "video") {
+    const typeOfFile = file?.mimetype.split("/")[0];
+    if (typeOfFile === "video") {
       return res
         .status(400)
         .json({ error: "Video files are currently not supported!" });
@@ -165,12 +174,12 @@ export async function sendMessage(req: Request, res: Response) {
     let uploadResult;
 
     // save the file to cloudinary
-    if (file) {
+    if (!fileObj && file) {
       const b64 = Buffer.from(file.buffer).toString("base64");
       const dataURI = "data:" + file.mimetype + ";base64," + b64;
-      if (fileType === "image") {
+      if (typeOfFile === "image") {
         uploadResult = await uploadFile(dataURI);
-      } else if (fileType === "audio") {
+      } else if (typeOfFile === "audio") {
         uploadResult = await uploadFile(dataURI, "video");
       } else {
         uploadResult = await uploadFile(dataURI, "raw");
@@ -191,9 +200,15 @@ export async function sendMessage(req: Request, res: Response) {
             size: uploadResult.bytes,
             url: uploadResult.secure_url,
           }
+        : fileObj
+        ? JSON.parse(fileObj)
         : null,
       status: "sent",
-      type: uploadResult ? uploadResult.resource_type : "text",
+      type: uploadResult
+        ? uploadResult.resource_type
+        : fileObj
+        ? fileType
+        : "text",
       mimeType: uploadResult ? file?.mimetype : null,
     });
 

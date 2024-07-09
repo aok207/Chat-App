@@ -9,7 +9,6 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
 import ErrorPage from "./pages/ErrorPage.tsx";
@@ -27,7 +26,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <RouterProvider router={router} />
-        <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </QueryClientProvider>
   </ThemeProvider>
