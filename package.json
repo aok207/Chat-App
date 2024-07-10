@@ -8,7 +8,9 @@
     "sockets": "tsx watch backend/sockets/index.ts",
     "server": "tsx watch backend/server.ts",
     "client": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node backend/dist/server.js",
+    "build": "cd backend && npm install && npx tsc && cd .. && npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",

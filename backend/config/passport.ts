@@ -9,6 +9,12 @@ import {
   Profile as GithubProfile,
 } from "passport-github2";
 import User from "../models/userModel";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(__dirname.replace("\\dist", ""), "../../.env"),
+});
 
 async function findOrCreateUser(
   name: string | undefined | null,

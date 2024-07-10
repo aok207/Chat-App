@@ -1,23 +1,27 @@
-import dotenv from "dotenv";
-import path from "path";
-dotenv.config({
-  path: path.resolve(__dirname.replace("\\dist", ""), "../../.env"),
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMailHtml = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+const path_1 = __importDefault(require("path"));
+dotenv_1.default.config({
+    path: path_1.default.resolve(__dirname.replace("\\dist", ""), "../../.env"),
 });
-import nodemailer from "nodemailer";
-
-const mailTransporter = nodemailer.createTransport({
-  service: "Gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_PASSWORD,
-  },
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const mailTransporter = nodemailer_1.default.createTransport({
+    service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.GMAIL_EMAIL,
+        pass: process.env.GMAIL_PASSWORD,
+    },
 });
-
-export function getMailHtml(username: string, resetLink: string) {
-  return `
+function getMailHtml(username, resetLink) {
+    return `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -87,5 +91,5 @@ export function getMailHtml(username: string, resetLink: string) {
   </html>
   `;
 }
-
-export default mailTransporter;
+exports.getMailHtml = getMailHtml;
+exports.default = mailTransporter;

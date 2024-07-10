@@ -80,13 +80,21 @@ async function socialCallback(req: Request, res: Response) {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
         })
-        .redirect(process.env.CLIENT_URL + "/login?success=oAuth" || "/");
+        .redirect(
+          process.env.NODE_ENV === "development"
+            ? process.env.CLIENT_URL + "/login?success=oAuth"
+            : "/login?success=oAuth"
+        );
     } else {
       throw new Error();
     }
   } catch (error) {
     console.log(error);
-    res.redirect(process.env.CLIENT_URL + "/login?error=oAuth" || "/");
+    res.redirect(
+      process.env.NODE_ENV === "development"
+        ? process.env.CLIENT_URL + "/login?success=oAuth"
+        : "/login?success=oAuth"
+    );
   }
 }
 

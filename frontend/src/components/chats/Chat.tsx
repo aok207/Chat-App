@@ -67,26 +67,24 @@ const Chat = ({
                 {latestMessage}
               </p>
             ) : (
-              latestMessage !== null && (
-                <p
-                  className={`text-sm ${
-                    latestMessageSenderId !== userId &&
-                    latestMessageStatus !== "read"
-                      ? "dark:text-white text-black font-bold"
-                      : "font-normal dark:text-slate-300 text-slate-500"
-                  } `}
-                >
-                  {userId === latestMessageSenderId ? "You" : name} sent{" "}
-                  {latestMessageType?.toLowerCase() === "Video"
-                    ? "Audio"
-                    : ["a", "e", "i", "o", "u"].includes(
-                        latestMessageType?.charAt(0).toLowerCase() || ""
-                      )
-                    ? "an"
-                    : "a"}{" "}
-                  {latestMessageType === "raw" ? "file" : latestMessageType}.
-                </p>
-              )
+              <p
+                className={`text-sm ${
+                  latestMessageSenderId !== userId &&
+                  latestMessageStatus !== "read"
+                    ? "dark:text-white text-black font-bold"
+                    : "font-normal dark:text-slate-300 text-slate-500"
+                } `}
+              >
+                {userId === latestMessageSenderId ? "You" : name} sent{" "}
+                {latestMessageType?.toLowerCase() === "Video"
+                  ? "Audio"
+                  : ["a", "e", "i", "o", "u"].includes(
+                      latestMessageType?.charAt(0).toLowerCase() || ""
+                    )
+                  ? "an"
+                  : "a"}{" "}
+                {latestMessageType === "raw" ? "file" : latestMessageType}.
+              </p>
             )}
 
             {latestMessageSenderId !== null &&

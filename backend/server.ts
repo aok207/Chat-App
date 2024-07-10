@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+dotenv.config({
+  path: path.resolve(__dirname.replace("\\dist", ""), "../.env"),
+});
 
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
@@ -12,12 +15,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import setupPassport from "./config/passport";
-import multerErrorMiddleware from "./middlewares/multerMiddleware";
+import { app, server } from "./sockets/index";
+// import multerErrorMiddleware from "./middlewares/multerMiddleware";
 
 // Connect to db
-connectToDB();
-
-const app = express();
+// connectToDB();
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,19 +39,28 @@ const port = process.env.PORT || 3000;
 // passport setup
 setupPassport();
 
-//
-app.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Hello world!</h1>");
-});
-
+// Api routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1", messageRouter);
+app.use("/api/v1/messages", messageRouter);
 
-// Error and not found middleware
-app.use(notFound);
-app.use(errorHandler);
+//  For deployments
 
-app.listen(port, () => {
+app.use(express.static(path.join(path.resolve(), "/frontend/dist")));
+
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(path.resolve(), "frontend", "dist", "index.html"));
+});
+
+if (process.env.NODE_ENV === "development") {
+  // Error and not found middleware
+  app.use(notFound);
+  app.use(errorHandler);
+}
+
+server.listen(port, () => {
   console.log(`Server is running on port ${port}...`);
 });
+
+// For Vecel
+export default app;

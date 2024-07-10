@@ -1,6 +1,9 @@
 import { v2 } from "cloudinary";
+import path from "path";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({
+  path: path.resolve(__dirname.replace("\\dist", ""), "../../.env"),
+});
 
 const cloudinary = v2;
 

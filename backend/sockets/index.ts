@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+dotenv.config({
+  path: path.resolve(__dirname.replace("\\dist", ""), "../../.env"),
+});
 
 import express from "express";
 import { createServer } from "http";
@@ -131,6 +134,8 @@ io.on("connection", async (socket: AuthenticatedSocket) => {
   );
 });
 
-server.listen(3001, () => {
-  console.log("Sockets server listening on port:3001");
-});
+// server.listen(3001, () => {
+//   console.log("Sockets server listening on port:3001");
+// });
+
+export { app, server };

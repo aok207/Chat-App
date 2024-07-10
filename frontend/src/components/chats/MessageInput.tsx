@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import EmojiPicker from "./EmojiPicker";
 import { v4 as uuidv4 } from "uuid";
-import { ScrollArea } from "../ui/scroll-area";
+// import { ScrollArea } from "../ui/scroll-area";
 import useSound from "@/hooks/useSound";
 
 type MessageInputProps = {

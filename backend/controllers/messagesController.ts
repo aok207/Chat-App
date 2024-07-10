@@ -463,7 +463,7 @@ export async function getReactions(req: Request, res: Response) {
       if (ids.length > 0) {
         reactions[emoji] = ids
           .map((id) => usersMap.get(id.toString()))
-          .filter((user) => user !== undefined);
+          .filter((user) => user !== undefined) as IUser[];
       }
     }
 
