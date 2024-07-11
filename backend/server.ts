@@ -61,6 +61,3 @@ if (process.env.NODE_ENV === "development") {
 server.listen(port, () => {
   console.log(`Server is running on port ${port}...`);
 });
-
-// For Vecel
-export default app;

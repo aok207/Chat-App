@@ -5,7 +5,11 @@ dotenv.config({
 });
 
 import express from "express";
-import { createServer } from "http";
+import {
+  createServer as httpCreateServer,
+  Server as HttpServer,
+} from "node:http";
+import { createServer as httpsCreateServer } from "node:https";
 import { Server } from "socket.io";
 import cors from "cors";
 import cookie from "cookie";
@@ -29,7 +33,14 @@ app.use(
 );
 // app.use(cookieParser());
 
-const server = createServer(app);
+let server: HttpServer;
+
+if (process.env.NODE_ENV === "development") {
+  server = httpCreateServer(app);
+} else {
+  server = httpsCreateServer(app);
+}
+
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL,
