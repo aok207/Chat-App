@@ -34,6 +34,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
 
     return () => {
       socket.off("connect_error");
+      socket.off("message changed");
     };
   }, []);
 

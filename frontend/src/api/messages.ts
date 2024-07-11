@@ -36,11 +36,11 @@ export function updateMessage({
   id: string;
   content: string;
 }): Promise<{ data: MessageType }> {
-  return api.patch(`/message/${id}`, { content }).then((res) => res.data);
+  return api.patch(`/messages/${id}`, { content }).then((res) => res.data);
 }
 
 export function deleteMessage(id: string) {
-  return api.delete(`/message/${id}`).then((res) => res.data);
+  return api.delete(`/messages/${id}`).then((res) => res.data);
 }
 
 export function getMessages({

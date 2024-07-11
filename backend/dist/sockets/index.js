@@ -19,7 +19,8 @@ dotenv_1.default.config({
     path: path_1.default.resolve(__dirname.replace("\\dist", ""), "../../.env"),
 });
 const express_1 = __importDefault(require("express"));
-const http_1 = require("http");
+const node_http_1 = require("node:http");
+const node_https_1 = require("node:https");
 const socket_io_1 = require("socket.io");
 const cors_1 = __importDefault(require("cors"));
 const cookie_1 = __importDefault(require("cookie"));
@@ -33,8 +34,13 @@ app.use((0, cors_1.default)({
     origin: process.env.CLIENT_URL,
 }));
 // app.use(cookieParser());
-const server = (0, http_1.createServer)(app);
-exports.server = server;
+let server;
+if (process.env.NODE_ENV === "development") {
+    exports.server = server = (0, node_http_1.createServer)(app);
+}
+else {
+    exports.server = server = (0, node_https_1.createServer)(app);
+}
 const io = new socket_io_1.Server(server, {
     cors: {
         origin: process.env.CLIENT_URL,
