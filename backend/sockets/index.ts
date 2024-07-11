@@ -38,7 +38,7 @@ let server: HttpServer;
 if (process.env.NODE_ENV === "development") {
   server = httpCreateServer(app);
 } else {
-  server = httpsCreateServer(app);
+  server = httpCreateServer(app);
 }
 
 const io = new Server(server, {
