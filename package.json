@@ -5,12 +5,11 @@
   "main": "backend/server.ts",
   "type": "commonjs",
   "scripts": {
-    "sockets": "tsx watch backend/sockets/index.ts",
     "server": "tsx watch backend/server.ts",
     "client": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "node backend/dist/server.js",
-    "build": "cd backend && npm install && tsc && cd .. && npm install && npm install --prefix frontend && npm run build --prefix frontend"
+    "build": "npm install && cd backend && npx tsc && cd .. && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",
