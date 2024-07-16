@@ -8,9 +8,9 @@
     "server": "tsx watch backend/server.ts",
     "client": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build-js": "cd backend && npx tsc",
-    "add-js-build": "git add backend/dist",
-    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
+    "build-js": "cd backend && npx tsc && cd .. && npm install --prefix frontend && npm run build --prefix frontend",
+    "add-js-build": "git add .",
+    "build": "npm install",
     "start": "node backend/dist/server.js"
   },
   "pre-commit": [
