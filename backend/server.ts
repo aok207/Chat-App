@@ -6,7 +6,6 @@ dotenv.config({
 
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import connectToDB from "./config/db";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import authRouter from "./routes/authRoutes";
 import userRouter from "./routes/userRoutes";
@@ -46,14 +45,12 @@ app.use("/api/v1/messages", messageRouter);
 
 //  For deployments
 
-app.use(express.static(path.join(path.resolve(), "/frontend/dist")));
+app.use(express.static(path.join(path.resolve(), "../../frontend/dist")));
 
 app.get("*", (req: Request, res: Response) => {
-  if (process.env.NODE_ENV === "development") {
-    res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
-  } else {
-    res.sendFile(path.resolve(__dirname, "../../frontend/dist/index.html"));
-  }
+  res.sendFile(
+    path.join(path.resolve(), "../../frontend", "dist", "index.html")
+  );
 });
 
 if (process.env.NODE_ENV === "development") {
