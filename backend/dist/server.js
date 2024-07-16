@@ -42,7 +42,12 @@ index_1.app.use("/api/v1/messages", messageRoutes_1.default);
 //  For deployments
 index_1.app.use(express_1.default.static(path_1.default.join(path_1.default.resolve(), "/frontend/dist")));
 index_1.app.get("*", (req, res) => {
-    res.sendFile(path_1.default.join(path_1.default.resolve(), "frontend", "dist", "index.html"));
+    if (process.env.NODE_ENV === "development") {
+        res.sendFile(path_1.default.resolve(__dirname, "../frontend/dist/index.html"));
+    }
+    else {
+        res.sendFile(path_1.default.resolve(__dirname, "../../frontend/dist/index.html"));
+    }
 });
 if (process.env.NODE_ENV === "development") {
     // Error and not found middleware

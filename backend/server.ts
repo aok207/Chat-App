@@ -49,7 +49,11 @@ app.use("/api/v1/messages", messageRouter);
 app.use(express.static(path.join(path.resolve(), "/frontend/dist")));
 
 app.get("*", (req: Request, res: Response) => {
-  res.sendFile(path.join(path.resolve(), "frontend", "dist", "index.html"));
+  if (process.env.NODE_ENV === "development") {
+    res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
+  } else {
+    res.sendFile(path.resolve(__dirname, "../../frontend/dist/index.html"));
+  }
 });
 
 if (process.env.NODE_ENV === "development") {
