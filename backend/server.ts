@@ -4,7 +4,6 @@ dotenv.config({
   path: path.resolve(__dirname.replace("\\dist", ""), "../.env"),
 });
 
-import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import authRouter from "./routes/authRoutes";
@@ -43,21 +42,8 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/messages", messageRouter);
 
-//  For deployments
-
-app.use(express.static(path.join(path.resolve(), "../../frontend/dist")));
-
-app.get("*", (req: Request, res: Response) => {
-  res.sendFile(
-    path.join(path.resolve(), "../../frontend", "dist", "index.html")
-  );
-});
-
-if (process.env.NODE_ENV === "development") {
-  // Error and not found middleware
-  app.use(notFound);
-  app.use(errorHandler);
-}
+app.use(notFound);
+app.use(errorHandler);
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}...`);

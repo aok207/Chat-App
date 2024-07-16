@@ -8,7 +8,6 @@ const path_1 = __importDefault(require("path"));
 dotenv_1.default.config({
     path: path_1.default.resolve(__dirname.replace("\\dist", ""), "../.env"),
 });
-const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const errorMiddleware_1 = require("./middlewares/errorMiddleware");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
@@ -39,16 +38,8 @@ const port = process.env.PORT || 3000;
 index_1.app.use("/api/v1/auth", authRoutes_1.default);
 index_1.app.use("/api/v1/users", userRoutes_1.default);
 index_1.app.use("/api/v1/messages", messageRoutes_1.default);
-//  For deployments
-index_1.app.use(express_1.default.static(path_1.default.join(path_1.default.resolve(), "../../frontend/dist")));
-index_1.app.get("*", (req, res) => {
-    res.sendFile(path_1.default.join(path_1.default.resolve(), "../../frontend", "dist", "index.html"));
-});
-if (process.env.NODE_ENV === "development") {
-    // Error and not found middleware
-    index_1.app.use(errorMiddleware_1.notFound);
-    index_1.app.use(errorMiddleware_1.errorHandler);
-}
+index_1.app.use(errorMiddleware_1.notFound);
+index_1.app.use(errorMiddleware_1.errorHandler);
 index_1.server.listen(port, () => {
     console.log(`Server is running on port ${port}...`);
 });
