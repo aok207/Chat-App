@@ -52,4 +52,4 @@ if (process.env.NODE_ENV === "development") {
 index_1.server.listen(port, () => {
     console.log(`Server is running on port ${port}...`);
 });
-exports.default = index_1.app;
+exports.default = index_1.server;

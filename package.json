@@ -9,11 +9,13 @@
     "client": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build-js": "cd backend && npx tsc",
+    "add-js-build": "git add backend/dist",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "node backend/dist/server.js"
   },
   "pre-commit": [
-    "build-js"
+    "build-js",
+    "add-js-build"
   ],
   "keywords": [],
   "author": "",
