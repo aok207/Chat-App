@@ -7,15 +7,17 @@
   "scripts": {
     "server": "tsx watch backend/server.ts",
     "client": "cd frontend && npm run dev",
-    "build-server-js": "cd backend && npx tsc",
-    "add-build": "git add backend/dist",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm install",
+    "build-backend": "npm install && cd backend && npx tsc",
+    "build-frontend": "cd frontend && npm install && npm run build",
+    "build-js": "npm run build-backend && npm run build-frontend",
+    "add-js-build": "git add .",
+    "build": "npm install && npm run build-frontend",
     "start": "node backend/dist/server.js"
   },
   "pre-commit": [
-    "build-server-js",
-    "add-build"
+    "build-js",
+    "add-js-build"
   ],
   "keywords": [],
   "author": "",
