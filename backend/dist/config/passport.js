@@ -79,7 +79,9 @@ function setupPassport() {
     passport_1.default.use(new passport_google_oauth20_1.Strategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/api/v1/auth/google/callback",
+        callbackURL: process.env.PRODUCTION_URL
+            ? process.env.PRODUCTION_URL + "/api/v1/auth/google/callback"
+            : "/api/v1/auth/google/callback",
     }, (accessToken, refreshToken, profile, cb) => {
         const { email, picture, name } = profile._json;
         findOrCreateUser(name, email, profile.provider, picture, cb);
@@ -87,7 +89,9 @@ function setupPassport() {
     passport_1.default.use(new passport_github2_1.Strategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "/api/v1/auth/github/callback",
+        callbackURL: process.env.PRODUCTION_URL
+            ? process.env.PRODUCTION_URL + "/api/v1/auth/github/callback"
+            : "/api/v1/auth/github/callback",
         scope: ["user:email"],
     }, (accessToken, refreshToken, profile, cb) => {
         var _a;

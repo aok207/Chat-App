@@ -87,7 +87,9 @@ function setupPassport() {
       {
         clientID: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        callbackURL: "/api/v1/auth/google/callback",
+        callbackURL: process.env.PRODUCTION_URL
+          ? process.env.PRODUCTION_URL + "/api/v1/auth/google/callback"
+          : "/api/v1/auth/google/callback",
       },
       (
         accessToken: string,
@@ -106,7 +108,9 @@ function setupPassport() {
       {
         clientID: process.env.GITHUB_CLIENT_ID as string,
         clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-        callbackURL: "/api/v1/auth/github/callback",
+        callbackURL: process.env.PRODUCTION_URL
+          ? process.env.PRODUCTION_URL + "/api/v1/auth/github/callback"
+          : "/api/v1/auth/github/callback",
         scope: ["user:email"],
       },
       (
