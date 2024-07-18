@@ -67,6 +67,8 @@ const onlineUsers = new Map<string, AuthenticatedSocket>();
 io.on("connection", async (socket: AuthenticatedSocket) => {
   const userId = socket.user?._id;
 
+  console.log("User with user id: " + userId + " joined");
+
   // update the user's online status to online
   updateUserOnlineStatus(userId, true);
   onlineUsers.set(userId?.toString() as string, socket);

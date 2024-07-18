@@ -63,6 +63,7 @@ const onlineUsers = new Map();
 io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userId = (_a = socket.user) === null || _a === void 0 ? void 0 : _a._id;
+    console.log("User with user id: " + userId + " joined");
     // update the user's online status to online
     (0, utils_1.updateUserOnlineStatus)(userId, true);
     onlineUsers.set(userId === null || userId === void 0 ? void 0 : userId.toString(), socket);
