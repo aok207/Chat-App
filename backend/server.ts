@@ -44,7 +44,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/messages", messageRouter);
 
 //  For deployments
-const frontendPath = path.join(__dirname, "..", "frontend", "dist");
+const frontendPath = path.join(__dirname, "..", "..", "frontend", "dist");
 app.use(express.static(frontendPath));
 
 app.get("*", (req: Request, res: Response) => {

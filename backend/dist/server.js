@@ -40,7 +40,7 @@ index_1.app.use("/api/v1/auth", authRoutes_1.default);
 index_1.app.use("/api/v1/users", userRoutes_1.default);
 index_1.app.use("/api/v1/messages", messageRoutes_1.default);
 //  For deployments
-const frontendPath = path_1.default.join(__dirname, "..", "frontend", "dist");
+const frontendPath = path_1.default.join(__dirname, "..", "..", "frontend", "dist");
 index_1.app.use(express_1.default.static(frontendPath));
 index_1.app.get("*", (req, res) => {
     res.sendFile(path_1.default.resolve(frontendPath, "index.html"));
