@@ -9,10 +9,10 @@
     "client": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build-backend": "npm install && cd backend && npx tsc",
-    "build-frontend": "cd frontend && npm install && npm run build",
+    "build-frontend": "cd frontend && npm install --production=false && npm run build",
     "build-js": "npm run build-backend && npm run build-frontend",
     "add-js-build": "git add .",
-    "build": "npm install",
+    "build": "npm install && npm run build-frontend",
     "start": "node backend/dist/server.js"
   },
   "pre-commit": [

@@ -44,13 +44,11 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/messages", messageRouter);
 
 //  For deployments
-
-app.use(express.static(path.join(path.resolve(), "../../frontend/dist")));
+const frontendPath = path.join(__dirname, "..", "frontend", "dist");
+app.use(express.static(frontendPath));
 
 app.get("*", (req: Request, res: Response) => {
-  res.sendFile(
-    path.join(path.resolve(), "../../frontend", "dist", "index.html")
-  );
+  res.sendFile(path.resolve(frontendPath, "index.html"));
 });
 
 if (process.env.NODE_ENV === "development") {
