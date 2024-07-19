@@ -55,37 +55,38 @@ const Chat = ({
             </span>
           </div>
           <div className="w-full text-left relative">
-            {latestMessageType === "text" ? (
-              <p
-                className={`truncate w-[85%] text-sm  ${
-                  latestMessageSenderId !== userId &&
-                  latestMessageStatus !== "read"
-                    ? "dark:text-white text-black font-bold"
-                    : "font-normal dark:text-slate-300 text-slate-500"
-                } `}
-              >
-                {latestMessage}
-              </p>
-            ) : (
-              <p
-                className={`text-sm ${
-                  latestMessageSenderId !== userId &&
-                  latestMessageStatus !== "read"
-                    ? "dark:text-white text-black font-bold"
-                    : "font-normal dark:text-slate-300 text-slate-500"
-                } `}
-              >
-                {userId === latestMessageSenderId ? "You" : name} sent{" "}
-                {latestMessageType?.toLowerCase() === "Video"
-                  ? "Audio"
-                  : ["a", "e", "i", "o", "u"].includes(
-                      latestMessageType?.charAt(0).toLowerCase() || ""
-                    )
-                  ? "an"
-                  : "a"}{" "}
-                {latestMessageType === "raw" ? "file" : latestMessageType}.
-              </p>
-            )}
+            {latestMessageType !== null &&
+              (latestMessageType === "text" ? (
+                <p
+                  className={`truncate w-[85%] text-sm  ${
+                    latestMessageSenderId !== userId &&
+                    latestMessageStatus !== "read"
+                      ? "dark:text-white text-black font-bold"
+                      : "font-normal dark:text-slate-300 text-slate-500"
+                  } `}
+                >
+                  {latestMessage}
+                </p>
+              ) : (
+                <p
+                  className={`text-sm ${
+                    latestMessageSenderId !== userId &&
+                    latestMessageStatus !== "read"
+                      ? "dark:text-white text-black font-bold"
+                      : "font-normal dark:text-slate-300 text-slate-500"
+                  } `}
+                >
+                  {userId === latestMessageSenderId ? "You" : name} sent{" "}
+                  {latestMessageType?.toLowerCase() === "Video"
+                    ? "Audio"
+                    : ["a", "e", "i", "o", "u"].includes(
+                        latestMessageType?.charAt(0).toLowerCase() || ""
+                      )
+                    ? "an"
+                    : "a"}{" "}
+                  {latestMessageType === "raw" ? "file" : latestMessageType}.
+                </p>
+              ))}
 
             {latestMessageSenderId !== null &&
               latestMessageSenderId !== userId &&
